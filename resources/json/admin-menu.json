@@ -1,0 +1,42 @@
+{
+    "menu": [
+        {
+            "title": "Dashboard",
+            "icon": "home",
+            "url": "/admin/dashboard",
+            "active": true,
+            "roles": ["admin", "guru", "siswa", "orang_tua"]
+        },
+        {
+            "title": "Data Master",
+            "icon": "database",
+            "roles": ["admin"],
+            "children": [
+                {
+                    "title": "Manajemen Pengguna",
+                    "icon": "users",
+                    "url": "/admin/users",
+                    "roles": ["admin"]
+                },
+                {
+                    "title": "Manajemen Kelas",
+                    "icon": "graduation-cap",
+                    "url": "/admin/kelas",
+                    "roles": ["admin"]
+                },
+                {
+                    "title": "Manajemen Mata Pelajaran",
+                    "icon": "book",
+                    "url": "/admin/mata-pelajaran",
+                    "roles": ["admin"]
+                }
+            ]
+        },
+        {
+            "title": "Kelas",
+            "url": "/admin/kelas-card",
+            "icon": "th-large",
+            "roles": ["admin", "guru"]
+        }
+    ]
+}
