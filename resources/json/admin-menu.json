@@ -33,9 +33,15 @@
             ]
         },
         {
-            "title": "Kelas",
-            "url": "/admin/kelas-card",
-            "icon": "th-large",
+            "title": "Kehadiran",
+            "url": "/admin/kelas-card?context=kehadiran",
+            "icon": "calendar-check",
+            "roles": ["admin", "guru"]
+        },
+        {
+            "title": "Nilai",
+            "url": "/admin/kelas-card?context=nilai",
+            "icon": "clipboard-list",
             "roles": ["admin", "guru"]
         }
     ]

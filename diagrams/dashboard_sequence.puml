@@ -1,0 +1,63 @@
+@startuml Dashboard - Diagram Sequence
+title Diagram Sequence - Melihat Dashboard
+
+actor Pengguna
+participant "Browser" as Browser
+participant "DashboardController" as Controller
+participant "Auth" as Auth
+participant "User Model" as User
+participant "Kelas Model" as Kelas
+participant "Kehadiran Model" as Kehadiran
+participant "Nilai Model" as Nilai
+database "Database" as DB
+
+Pengguna -> Browser: Akses dashboard
+Browser -> Controller: index()
+Controller -> Auth: user()
+Auth --> Controller: user
+
+alt User adalah Admin
+    Controller -> User: count()
+    User -> DB: SELECT COUNT(*) FROM users
+    DB --> User: Jumlah user
+    User --> Controller: totalUsers
+    
+    Controller -> Role: count()
+    Controller -> Permission: count()
+    Controller --> Browser: View dengan data admin
+    
+else User adalah Guru
+    Controller -> Kelas: where('user_id', user->id)->get()
+    Kelas -> DB: SELECT * FROM kelas WHERE user_id = ?
+    DB --> Kelas: Data kelas
+    Kelas --> Controller: kelas
+    
+    Controller -> Controller: Hitung total siswa
+    Controller --> Browser: View dengan data guru
+    
+else User adalah Siswa
+    Controller -> KelasSiswa: where('user_id', user->id)->pluck('kelas_id')
+    Controller -> Kelas: whereIn('id', kelasIds)->get()
+    Controller -> Kehadiran: where(...)->orderBy(...)->take(5)->get()
+    Controller -> Nilai: where(...)->orderBy(...)->take(5)->get()
+    Controller --> Browser: View dengan data siswa
+    
+else User adalah Orang Tua
+    Controller -> User: where('nkk', user->nkk)->whereHas('roles', ...)->get()
+    User -> DB: SELECT * FROM users WHERE nkk = ? AND ...
+    DB --> User: Data anak
+    User --> Controller: anak
+    
+    loop Untuk setiap anak
+        Controller -> KelasSiswa: where('user_id', anak->id)->pluck('kelas_id')
+        Controller -> Kelas: whereIn('id', kelasIds)->get()
+        Controller -> Kehadiran: where(...)->orderBy(...)->take(5)->get()
+        Controller -> Nilai: where(...)->orderBy(...)->take(5)->get()
+    end
+    
+    Controller --> Browser: View dengan data orang tua
+end
+
+Browser --> Pengguna: Tampilkan dashboard sesuai role
+
+@enduml

@@ -1,0 +1,32 @@
+@startuml Tambah Mata Pelajaran - Diagram Sequence
+title Diagram Sequence - Tambah Mata Pelajaran
+
+actor Admin
+participant "Browser" as Browser
+participant "MataPelajaranController" as Controller
+participant "MataPelajaran Model" as MataPelajaran
+database "Database" as DB
+
+Admin -> Browser: Akses halaman tambah mata pelajaran
+Browser -> Controller: create()
+Controller --> Browser: Form tambah mata pelajaran
+Browser --> Admin: Tampilkan form
+
+Admin -> Browser: Isi form dan submit
+Browser -> Controller: store(request)
+Controller -> Controller: Validasi input
+
+alt Validasi Berhasil
+    Controller -> MataPelajaran: create(validated_data)
+    MataPelajaran -> DB: INSERT INTO mata_pelajaran
+    DB --> MataPelajaran: Mata pelajaran baru
+    MataPelajaran --> Controller: mataPelajaran
+    
+    Controller --> Browser: Redirect dengan pesan sukses
+    Browser --> Admin: Tampilkan halaman mata pelajaran dengan pesan sukses
+else Validasi Gagal
+    Controller --> Browser: Redirect kembali dengan error
+    Browser --> Admin: Tampilkan form dengan pesan error
+end
+
+@enduml

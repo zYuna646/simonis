@@ -21,6 +21,7 @@
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-left">Nama</th>
                     <th class="py-3 px-6 text-left">Deskripsi</th>
+                    <th class="py-3 px-6 text-left">Guru Pengajar</th>
                     <th class="py-3 px-6 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -29,6 +30,7 @@
                     <tr class="border-b border-gray-200 hover:bg-gray-50">
                         <td class="py-3 px-6 text-left">{{ $mataPelajaran->name }}</td>
                         <td class="py-3 px-6 text-left">{{ $mataPelajaran->desc }}</td>
+                        <td class="py-3 px-6 text-left">{{ $mataPelajaran->guru ? $mataPelajaran->guru->name : '-' }}</td>
                         <td class="py-3 px-6 text-center">
                             <div class="flex item-center justify-center">
                                 <a href="{{ route('admin.mata-pelajaran.edit', $mataPelajaran->id) }}" class="w-4 mr-4 transform hover:text-blue-500 hover:scale-110 transition">

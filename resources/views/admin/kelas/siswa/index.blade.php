@@ -3,8 +3,33 @@
 @section('content')
 <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Daftar Siswa Kelas {{ $kelas->name }}</h2>
+        <h2 class="text-xl font-semibold text-gray-800">Kelas {{ $kelas->name }}</h2>
         <div class="flex space-x-2">
+            @php $context = request()->get('context'); @endphp
+            @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('guru'))
+                @if($context === 'kehadiran')
+                    <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
+                        <i class="fas fa-calendar-plus mr-2"></i>Input Massal Kehadiran
+                    </a>
+                    <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
+                        <i class="fas fa-table mr-2"></i>Rekap Kehadiran
+                    </a>
+                @elseif($context === 'nilai')
+                    <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                        <i class="fas fa-list mr-2"></i>Input Massal Nilai
+                    </a>
+                @else
+                    <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
+                        <i class="fas fa-calendar-plus mr-2"></i>Input Massal Kehadiran
+                    </a>
+                    <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                        <i class="fas fa-list mr-2"></i>Input Massal Nilai
+                    </a>
+                    <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
+                        <i class="fas fa-table mr-2"></i>Rekap Kehadiran
+                    </a>
+                @endif
+            @endif
             <a href="{{ route('admin.kelas.siswa.create', $kelas->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 <i class="fas fa-plus mr-2"></i>Tambah Siswa
             </a>
@@ -20,44 +45,113 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($siswa as $s)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition">
-                <div class="p-5 bg-blue-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800">{{ $s->name }}</h3>
-                </div>
-                <div class="p-5">
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600">Email:</p>
-                        <p class="font-medium text-gray-800">{{ $s->email }}</p>
-                    </div>
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600">NIS:</p>
-                        <p class="font-medium text-gray-800">{{ $s->nis ?? '-' }}</p>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-2 mt-4">
-                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
-                            <i class="fas fa-calendar-check mr-1"></i> Kehadiran
-                        </a>
-                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
-                            <i class="fas fa-graduation-cap mr-1"></i> Nilai
-                        </a>
-                        <form action="{{ route('admin.kelas.siswa.destroy', [$kelas->id, $s->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini dari kelas?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition">
-                                <i class="fas fa-trash mr-1"></i> Hapus
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-full text-center py-10">
-                <p class="text-gray-500">Belum ada siswa di kelas ini.</p>
-            </div>
-        @endforelse
+    <!-- Jadwal Kelas -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Jadwal Pelajaran</h3>
+            <a href="{{ route('admin.kelas.jadwal.create', $kelas->id) }}" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                <i class="fas fa-plus mr-2"></i>Tambah Jadwal
+            </a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Hari</th>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Mata Pelajaran</th>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Guru Pengajar</th>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Jam</th>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Pertemuan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($jadwals as $jadwal)
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 border-b border-gray-200">{{ $days[$jadwal->hari] ?? $jadwal->hari }}</td>
+                            <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->mataPelajaran->name ?? '-' }}</td>
+                            <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->mataPelajaran->guru->name ?? '-' }}</td>
+                            <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
+                            <td class="py-3 px-4 border-b border-gray-200">
+                                @php
+                                    $pertemuanCount = App\Models\Kehadiran::where('kelas_id', $kelas->id)
+                                        ->where('mata_pelajaran_id', $jadwal->mata_pelajaran_id)
+                                        ->select('tanggal')
+                                        ->distinct()
+                                        ->count();
+                                @endphp
+                                <div class="flex flex-wrap gap-1">
+                                    @for($i = 1; $i <= $pertemuanCount; $i++)
+                                        <a href="{{ route('admin.kelas.jadwal.pertemuan', [$kelas->id, $jadwal->id, $i]) }}" 
+                                           class="px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition text-xs">
+                                            P-{{ $i }}
+                                        </a>
+                                    @endfor
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="py-4 px-4 text-center text-gray-500">Belum ada jadwal untuk kelas ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Daftar Siswa -->
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Daftar Siswa</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Nama</th>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">NISN</th>
+                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($siswa as $s)
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 border-b border-gray-200 font-medium">{{ $s->name }}</td>
+                            <td class="py-3 px-4 border-b border-gray-200">{{ $s->nisn ?? '-' }}</td>
+                            <td class="py-3 px-4 border-b border-gray-200">
+                                <div class="flex space-x-2">
+                                    @if($context === 'kehadiran')
+                                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
+                                            <i class="fas fa-calendar-check mr-1"></i> Kehadiran
+                                        </a>
+                                    @elseif($context === 'nilai')
+                                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
+                                            <i class="fas fa-graduation-cap mr-1"></i> Nilai
+                                        </a>
+                                    @else
+                                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
+                                            <i class="fas fa-calendar-check mr-1"></i> Kehadiran
+                                        </a>
+                                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
+                                            <i class="fas fa-graduation-cap mr-1"></i> Nilai
+                                        </a>
+                                    @endif
+                                    <form action="{{ route('admin.kelas.siswa.destroy', [$kelas->id, $s->id]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus siswa ini dari kelas?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition">
+                                            <i class="fas fa-trash mr-1"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="py-4 px-4 text-center text-gray-500">Belum ada siswa di kelas ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 @endsection

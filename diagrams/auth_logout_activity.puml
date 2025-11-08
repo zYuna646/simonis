@@ -1,0 +1,16 @@
+@startuml Logout - Diagram Aktivitas
+title Diagram Aktivitas - Logout
+
+|Pengguna|
+start
+:Klik tombol logout;
+
+|Sistem|
+:Hapus session pengguna;
+:Regenerate CSRF token;
+:Redirect ke halaman landing;
+
+|Pengguna|
+:Melihat halaman landing;
+stop
+@enduml

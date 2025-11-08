@@ -14,12 +14,13 @@ class Nilai extends Model
     protected $fillable = [
         'user_id',
         'kelas_id',
+        'mata_pelajaran_id',
         'jenis',
         'tanggal',
         'nilai',
         'keterangan',
     ];
-
+    
     protected $casts = [
         'tanggal' => 'date',
         'nilai' => 'float',
@@ -33,5 +34,10 @@ class Nilai extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);
+    }
+    
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
     }
 }

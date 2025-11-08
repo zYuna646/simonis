@@ -1,0 +1,126 @@
+@startuml SIMONIS Use Case Diagram
+
+' Aktor
+actor "Admin" as admin
+actor "Guru" as guru
+actor "Siswa" as siswa
+actor "Orang Tua" as orangtua
+
+' Sistem
+rectangle "SIMONIS - Sistem Informasi Monitoring Siswa" {
+  ' Dashboard
+  usecase "Melihat Dashboard" as UC_Dashboard
+  
+  ' Manajemen User
+  usecase "Mengelola User" as UC_ManageUser
+  usecase "Melihat Daftar User" as UC_ViewUsers
+  usecase "Menambah User" as UC_AddUser
+  usecase "Mengedit User" as UC_EditUser
+  usecase "Menghapus User" as UC_DeleteUser
+  
+  ' Manajemen Kelas
+  usecase "Mengelola Kelas" as UC_ManageKelas
+  usecase "Melihat Daftar Kelas" as UC_ViewKelas
+  usecase "Menambah Kelas" as UC_AddKelas
+  usecase "Mengedit Kelas" as UC_EditKelas
+  usecase "Menghapus Kelas" as UC_DeleteKelas
+  
+  ' Manajemen Siswa dalam Kelas
+  usecase "Mengelola Siswa dalam Kelas" as UC_ManageKelasSiswa
+  usecase "Melihat Daftar Siswa dalam Kelas" as UC_ViewKelasSiswa
+  usecase "Menambah Siswa ke Kelas" as UC_AddKelasSiswa
+  usecase "Menghapus Siswa dari Kelas" as UC_DeleteKelasSiswa
+  
+  ' Manajemen Kehadiran
+  usecase "Mengelola Kehadiran" as UC_ManageKehadiran
+  usecase "Melihat Kehadiran" as UC_ViewKehadiran
+  usecase "Menambah Kehadiran" as UC_AddKehadiran
+  usecase "Mengedit Kehadiran" as UC_EditKehadiran
+  usecase "Menghapus Kehadiran" as UC_DeleteKehadiran
+  
+  ' Manajemen Nilai
+  usecase "Mengelola Nilai" as UC_ManageNilai
+  usecase "Melihat Nilai" as UC_ViewNilai
+  usecase "Menambah Nilai" as UC_AddNilai
+  usecase "Mengedit Nilai" as UC_EditNilai
+  usecase "Menghapus Nilai" as UC_DeleteNilai
+  
+  ' Manajemen Mata Pelajaran
+  usecase "Mengelola Mata Pelajaran" as UC_ManageMataPelajaran
+  usecase "Melihat Daftar Mata Pelajaran" as UC_ViewMataPelajaran
+  usecase "Menambah Mata Pelajaran" as UC_AddMataPelajaran
+  usecase "Mengedit Mata Pelajaran" as UC_EditMataPelajaran
+  usecase "Menghapus Mata Pelajaran" as UC_DeleteMataPelajaran
+  
+  ' Autentikasi
+  usecase "Login" as UC_Login
+  usecase "Logout" as UC_Logout
+}
+
+' Relasi Aktor dengan Use Case
+
+' Admin
+admin --> UC_Dashboard
+admin --> UC_ManageUser
+admin --> UC_ManageKelas
+admin --> UC_ManageKelasSiswa
+admin --> UC_ManageKehadiran
+admin --> UC_ManageNilai
+admin --> UC_ManageMataPelajaran
+admin --> UC_Login
+admin --> UC_Logout
+
+' Guru
+guru --> UC_Dashboard
+guru --> UC_ViewKelas
+guru --> UC_ViewKelasSiswa
+guru --> UC_ManageKehadiran
+guru --> UC_ManageNilai
+guru --> UC_Login
+guru --> UC_Logout
+
+' Siswa
+siswa --> UC_Dashboard
+siswa --> UC_ViewKehadiran
+siswa --> UC_ViewNilai
+siswa --> UC_Login
+siswa --> UC_Logout
+
+' Orang Tua
+orangtua --> UC_Dashboard
+orangtua --> UC_ViewKehadiran
+orangtua --> UC_ViewNilai
+orangtua --> UC_Login
+orangtua --> UC_Logout
+
+' Relasi Include
+UC_ManageUser ..> UC_ViewUsers : <<include>>
+UC_ManageUser ..> UC_AddUser : <<include>>
+UC_ManageUser ..> UC_EditUser : <<include>>
+UC_ManageUser ..> UC_DeleteUser : <<include>>
+
+UC_ManageKelas ..> UC_ViewKelas : <<include>>
+UC_ManageKelas ..> UC_AddKelas : <<include>>
+UC_ManageKelas ..> UC_EditKelas : <<include>>
+UC_ManageKelas ..> UC_DeleteKelas : <<include>>
+
+UC_ManageKelasSiswa ..> UC_ViewKelasSiswa : <<include>>
+UC_ManageKelasSiswa ..> UC_AddKelasSiswa : <<include>>
+UC_ManageKelasSiswa ..> UC_DeleteKelasSiswa : <<include>>
+
+UC_ManageKehadiran ..> UC_ViewKehadiran : <<include>>
+UC_ManageKehadiran ..> UC_AddKehadiran : <<include>>
+UC_ManageKehadiran ..> UC_EditKehadiran : <<include>>
+UC_ManageKehadiran ..> UC_DeleteKehadiran : <<include>>
+
+UC_ManageNilai ..> UC_ViewNilai : <<include>>
+UC_ManageNilai ..> UC_AddNilai : <<include>>
+UC_ManageNilai ..> UC_EditNilai : <<include>>
+UC_ManageNilai ..> UC_DeleteNilai : <<include>>
+
+UC_ManageMataPelajaran ..> UC_ViewMataPelajaran : <<include>>
+UC_ManageMataPelajaran ..> UC_AddMataPelajaran : <<include>>
+UC_ManageMataPelajaran ..> UC_EditMataPelajaran : <<include>>
+UC_ManageMataPelajaran ..> UC_DeleteMataPelajaran : <<include>>
+
+@enduml

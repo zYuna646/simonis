@@ -1,0 +1,28 @@
+@startuml Tambah User - Diagram Aktivitas
+title Diagram Aktivitas - Tambah User
+
+|Admin|
+start
+:Akses halaman user;
+:Klik tombol tambah user;
+:Isi formulir data user;
+:Pilih role untuk user;
+:Klik tombol simpan;
+
+|Sistem|
+:Validasi input;
+
+if (Input valid?) then (ya)
+  :Buat user baru;
+  :Assign role ke user;
+  :Simpan ke database;
+  :Tampilkan pesan sukses;
+else (tidak)
+  :Tampilkan pesan error;
+  :Kembalikan ke form dengan data yang sudah diisi;
+endif
+
+|Admin|
+:Melihat hasil;
+stop
+@enduml

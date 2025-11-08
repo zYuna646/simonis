@@ -14,9 +14,11 @@ class Kehadiran extends Model
     protected $fillable = [
         'user_id',
         'kelas_id',
+        'mata_pelajaran_id',
         'status',
         'tanggal',
         'keterangan',
+        'lampiran',
     ];
 
     protected $casts = [
@@ -31,5 +33,10 @@ class Kehadiran extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas::class);
+    }
+    
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mata_pelajaran_id');
     }
 }

@@ -27,9 +27,23 @@
                     </div>
                     
                     <div class="flex justify-end space-x-2 mt-4">
-                        <a href="{{ route('admin.kelas.siswa.index', $item->id) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
-                            <i class="fas fa-eye mr-1"></i> Detail
-                        </a>
+                        @php($context = request('context'))
+                        @if($context === 'kehadiran')
+                            <a href="{{ route('admin.kelas.siswa.index', $item->id) }}?context=kehadiran" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                                <i class="fas fa-user-check mr-1"></i> Kehadiran
+                            </a>
+                        @elseif($context === 'nilai')
+                            <a href="{{ route('admin.kelas.siswa.index', $item->id) }}?context=nilai" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                                <i class="fas fa-clipboard-list mr-1"></i> Nilai
+                            </a>
+                        @else
+                            <a href="{{ route('admin.kelas.siswa.index', $item->id) }}?context=kehadiran" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                                <i class="fas fa-user-check mr-1"></i> Kehadiran
+                            </a>
+                            <a href="{{ route('admin.kelas.siswa.index', $item->id) }}?context=nilai" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                                <i class="fas fa-clipboard-list mr-1"></i> Nilai
+                            </a>
+                        @endif
                         
                         @if(auth()->user()->hasRole('admin') || auth()->id() == $item->user_id)
                             <a href="{{ route('admin.kelas.edit', $item->id) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">

@@ -1,0 +1,32 @@
+@startuml Tambah Kehadiran - Diagram Sequence
+title Diagram Sequence - Tambah Kehadiran
+
+actor "Admin/Guru" as Admin
+participant "Browser" as Browser
+participant "KehadiranController" as Controller
+participant "Kehadiran Model" as Kehadiran
+database "Database" as DB
+
+Admin -> Browser: Akses halaman tambah kehadiran
+Browser -> Controller: create(kelas_id, siswa_id)
+Controller --> Browser: Form tambah kehadiran
+Browser --> Admin: Tampilkan form
+
+Admin -> Browser: Isi form dan submit
+Browser -> Controller: store(request, kelas_id, siswa_id)
+Controller -> Controller: Validasi input
+
+alt Validasi Berhasil
+    Controller -> Kehadiran: create(validated_data)
+    Kehadiran -> DB: INSERT INTO kehadiran
+    DB --> Kehadiran: Kehadiran baru
+    Kehadiran --> Controller: kehadiran
+    
+    Controller --> Browser: Redirect dengan pesan sukses
+    Browser --> Admin: Tampilkan halaman kehadiran dengan pesan sukses
+else Validasi Gagal
+    Controller --> Browser: Redirect kembali dengan error
+    Browser --> Admin: Tampilkan form dengan pesan error
+end
+
+@enduml

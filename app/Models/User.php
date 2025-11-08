@@ -48,4 +48,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    /**
+     * Relasi dengan KelasSiswa
+     */
+    public function kelasSiswa()
+    {
+        return $this->hasMany(KelasSiswa::class);
+    }
 }

@@ -21,7 +21,22 @@ class KelasSiswaController extends Controller
             })
             ->get();
         
-        return view('admin.kelas.siswa.index', compact('kelas', 'siswa'));
+        // Ambil data jadwal kelas
+        $jadwals = \App\Models\Jadwal::with(['mataPelajaran', 'mataPelajaran.guru'])
+            ->where('kelas_id', $id)
+            ->orderBy('hari')
+            ->get();
+            
+        $days = [
+            'senin' => 'Senin',
+            'selasa' => 'Selasa',
+            'rabu' => 'Rabu',
+            'kamis' => 'Kamis',
+            'jumat' => 'Jumat',
+            'sabtu' => 'Sabtu',
+        ];
+        
+        return view('admin.kelas.siswa.index', compact('kelas', 'siswa', 'jadwals', 'days'));
     }
     
     public function create($id)

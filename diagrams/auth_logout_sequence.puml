@@ -1,0 +1,18 @@
+@startuml Logout - Diagram Sequence
+title Diagram Sequence - Logout
+
+actor Pengguna
+participant "Browser" as Browser
+participant "AuthController" as Controller
+participant "Auth Facade" as Auth
+
+Pengguna -> Browser: Klik tombol logout
+Browser -> Controller: logout(request)
+Controller -> Auth: logout()
+Auth --> Controller: Session dihapus
+Controller -> Controller: Invalidate session
+Controller -> Controller: Regenerate token
+Controller --> Browser: Redirect ke halaman landing
+Browser --> Pengguna: Tampilkan halaman landing
+
+@enduml

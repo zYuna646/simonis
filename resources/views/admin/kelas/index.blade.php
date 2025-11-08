@@ -21,7 +21,7 @@
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-left">Nama Kelas</th>
                     <th class="py-3 px-6 text-left">Guru</th>
-                    <th class="py-3 px-6 text-center">Aksi</th>
+                    {{-- <th class="py-3 px-6 text-center">Aksi</th> --}}
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm">
@@ -29,8 +29,11 @@
                     <tr class="border-b border-gray-200 hover:bg-gray-50">
                         <td class="py-3 px-6 text-left">{{ $item->name }}</td>
                         <td class="py-3 px-6 text-left">{{ $item->user->name }}</td>
-                        <td class="py-3 px-6 text-center">
+                        {{-- <td class="py-3 px-6 text-center">
                             <div class="flex item-center justify-center">
+                                <a href="{{ route('admin.kelas.jadwal.index', $item->id) }}" class="w-4 mr-4 transform hover:text-yellow-600 hover:scale-110 transition" title="Jadwal">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </a>
                                 <a href="{{ route('admin.kelas.edit', $item->id) }}" class="w-4 mr-4 transform hover:text-blue-500 hover:scale-110 transition">
                                     <i class="fas fa-edit"></i>
                                 </a>
@@ -42,7 +45,7 @@
                                     </button>
                                 </form>
                             </div>
-                        </td>
+                        </td> --}}
                     </tr>
                 @empty
                     <tr>

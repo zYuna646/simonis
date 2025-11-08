@@ -19,10 +19,18 @@
                 <p class="text-sm text-gray-600">Kelas:</p>
                 <p class="font-medium text-gray-800">{{ $kelas->name }}</p>
             </div>
+            <div>
+                <p class="text-sm text-gray-600">Mata Pelajaran (otomatis):</p>
+                <p class="font-medium text-gray-800">{{ $mataPelajaran->name ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Guru Pengajar:</p>
+                <p class="font-medium text-gray-800">{{ $mataPelajaran->guru->name ?? '-' }}</p>
+            </div>
         </div>
     </div>
 
-    <form action="{{ route('admin.kelas.siswa.kehadiran.store', [$kelas->id, $siswa->id]) }}" method="POST">
+    <form action="{{ route('admin.kelas.siswa.kehadiran.store', [$kelas->id, $siswa->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         
         <div class="mb-4">
@@ -50,6 +58,14 @@
             <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-1">Keterangan (Opsional)</label>
             <textarea name="keterangan" id="keterangan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ old('keterangan') }}</textarea>
             @error('keterangan')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label for="lampiran" class="block text-sm font-medium text-gray-700 mb-1">Lampiran (Opsional)</label>
+            <input type="file" name="lampiran" id="lampiran" class="w-full">
+            @error('lampiran')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
         </div>

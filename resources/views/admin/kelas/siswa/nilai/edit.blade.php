@@ -22,6 +22,7 @@
         </div>
     </div>
 
+    @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('guru'))
     <form action="{{ route('admin.kelas.siswa.nilai.update', [$kelas->id, $siswa->id, $nilai->id]) }}" method="POST">
         @csrf
         @method('PUT')
@@ -67,5 +68,10 @@
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Simpan Perubahan</button>
         </div>
     </form>
+    @else
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+        <p>Anda tidak memiliki akses untuk mengedit nilai.</p>
+    </div>
+    @endif
 </div>
 @endsection

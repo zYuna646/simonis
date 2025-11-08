@@ -1,0 +1,44 @@
+@startuml Tambah Kelas - Diagram Sequence
+title Diagram Sequence - Tambah Kelas
+
+actor "Admin/Guru" as Admin
+participant "Browser" as Browser
+participant "KelasController" as Controller
+participant "Kelas Model" as Kelas
+participant "User Model" as User
+participant "MataPelajaran Model" as MataPelajaran
+database "Database" as DB
+
+Admin -> Browser: Akses halaman tambah kelas
+Browser -> Controller: create()
+Controller -> User: whereHas('roles', function($q) { $q->where('name', 'guru'); })->get()
+User -> DB: SELECT * FROM users JOIN role_user...
+DB --> User: Data guru
+User --> Controller: guru
+
+Controller -> MataPelajaran: all()
+MataPelajaran -> DB: SELECT * FROM mata_pelajaran
+DB --> MataPelajaran: Data mata pelajaran
+MataPelajaran --> Controller: mataPelajaran
+
+Controller --> Browser: Form tambah kelas dengan daftar guru dan mata pelajaran
+Browser --> Admin: Tampilkan form
+
+Admin -> Browser: Isi form dan submit
+Browser -> Controller: store(request)
+Controller -> Controller: Validasi input
+
+alt Validasi Berhasil
+    Controller -> Kelas: create(validated_data)
+    Kelas -> DB: INSERT INTO kelas
+    DB --> Kelas: Kelas baru
+    Kelas --> Controller: kelas
+    
+    Controller --> Browser: Redirect dengan pesan sukses
+    Browser --> Admin: Tampilkan halaman kelas dengan pesan sukses
+else Validasi Gagal
+    Controller --> Browser: Redirect kembali dengan error
+    Browser --> Admin: Tampilkan form dengan pesan error
+end
+
+@enduml

@@ -53,6 +53,22 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
      Route::get('/kelas/{kelas}/siswa/{user}/kehadiran/{kehadiran}/edit', [\App\Http\Controllers\Admin\KehadiranController::class, 'edit'])->name('admin.kelas.siswa.kehadiran.edit');
      Route::put('/kelas/{kelas}/siswa/{user}/kehadiran/{kehadiran}', [\App\Http\Controllers\Admin\KehadiranController::class, 'update'])->name('admin.kelas.siswa.kehadiran.update');
      Route::delete('/kelas/{kelas}/siswa/{user}/kehadiran/{kehadiran}', [\App\Http\Controllers\Admin\KehadiranController::class, 'destroy'])->name('admin.kelas.siswa.kehadiran.destroy');
+
+     // Rekap kehadiran kelas & PDF
+     Route::get('/kelas/{kelas}/kehadiran/rekap', [\App\Http\Controllers\Admin\KehadiranController::class, 'rekapKelas'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.kehadiran.rekap');
+     Route::get('/kelas/{kelas}/kehadiran/rekap/pdf', [\App\Http\Controllers\Admin\KehadiranController::class, 'rekapKelasPdf'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.kehadiran.rekap.pdf');
+     
+     // Input massal kehadiran per kelas
+     Route::get('/kelas/{kelas}/kehadiran/bulk-create', [\App\Http\Controllers\Admin\KehadiranController::class, 'bulkCreate'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.kehadiran.bulk.create');
+     Route::post('/kelas/{kelas}/kehadiran/bulk-store', [\App\Http\Controllers\Admin\KehadiranController::class, 'bulkStore'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.kehadiran.bulk.store');
      
      // Rute untuk nilai
      Route::get('/kelas/{kelas}/siswa/{user}/nilai', [\App\Http\Controllers\Admin\NilaiController::class, 'index'])->name('admin.kelas.siswa.nilai.index');
@@ -61,4 +77,28 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
      Route::get('/kelas/{kelas}/siswa/{user}/nilai/{nilai}/edit', [\App\Http\Controllers\Admin\NilaiController::class, 'edit'])->name('admin.kelas.siswa.nilai.edit');
      Route::put('/kelas/{kelas}/siswa/{user}/nilai/{nilai}', [\App\Http\Controllers\Admin\NilaiController::class, 'update'])->name('admin.kelas.siswa.nilai.update');
      Route::delete('/kelas/{kelas}/siswa/{user}/nilai/{nilai}', [\App\Http\Controllers\Admin\NilaiController::class, 'destroy'])->name('admin.kelas.siswa.nilai.destroy');
+
+     // Rute nilai massal per kelas
+     Route::get('/kelas/{kelas}/nilai/bulk-create', [\App\Http\Controllers\Admin\NilaiController::class, 'bulkCreate'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.nilai.bulk.create');
+     Route::post('/kelas/{kelas}/nilai/bulk-store', [\App\Http\Controllers\Admin\NilaiController::class, 'bulkStore'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.nilai.bulk.store');
+     // Rute jadwal per kelas
+     Route::get('/kelas/{kelas}/jadwal', [\App\Http\Controllers\Admin\JadwalController::class, 'index'])
+         ->name('admin.kelas.jadwal.index');
+     Route::get('/kelas/{kelas}/jadwal/create', [\App\Http\Controllers\Admin\JadwalController::class, 'create'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.jadwal.create');
+     Route::post('/kelas/{kelas}/jadwal', [\App\Http\Controllers\Admin\JadwalController::class, 'store'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.jadwal.store');
+     Route::delete('/kelas/{kelas}/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalController::class, 'destroy'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.jadwal.destroy');
+     
+     // Route untuk detail pertemuan
+     Route::get('/kelas/{kelas}/jadwal/{jadwal}/pertemuan/{pertemuan}', [\App\Http\Controllers\Admin\JadwalController::class, 'pertemuan'])
+         ->name('admin.kelas.jadwal.pertemuan');
 });

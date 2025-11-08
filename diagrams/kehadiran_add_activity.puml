@@ -1,0 +1,28 @@
+@startuml Tambah Kehadiran - Diagram Aktivitas
+title Diagram Aktivitas - Tambah Kehadiran
+
+|Admin/Guru|
+start
+:Akses halaman kehadiran siswa;
+:Klik tombol tambah kehadiran;
+:Pilih tanggal;
+:Pilih status kehadiran;
+:Tambahkan keterangan (opsional);
+:Klik tombol simpan;
+
+|Sistem|
+:Validasi input;
+
+if (Input valid?) then (ya)
+  :Buat data kehadiran baru;
+  :Simpan ke database;
+  :Tampilkan pesan sukses;
+else (tidak)
+  :Tampilkan pesan error;
+  :Kembalikan ke form dengan data yang sudah diisi;
+endif
+
+|Admin/Guru|
+:Melihat hasil;
+stop
+@enduml

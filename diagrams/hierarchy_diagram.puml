@@ -1,0 +1,207 @@
+@startuml SIMONIS Hierarchy Diagram
+
+' Styling
+skinparam packageStyle rectangle
+skinparam classBackgroundColor LightBlue
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+skinparam stereotypeCBackgroundColor Yellow
+skinparam stereotypeCBorderColor Black
+
+title SIMONIS - Sistem Informasi Nilai Online Siswa - Hierarchy Diagram
+
+' Controllers
+package "Controllers" {
+  abstract class "Controller" as BaseController {
+    + __construct()
+  }
+  
+  package "Admin Controllers" {
+    class "DashboardController" as AdminDashboardController {
+      + index()
+    }
+    
+    class "JadwalController" as AdminJadwalController {
+      + index()
+      + create()
+      + store()
+      + edit()
+      + update()
+      + destroy()
+    }
+    
+    class "KehadiranController" as AdminKehadiranController {
+      + index()
+      + create()
+      + store()
+      + edit()
+      + update()
+      + destroy()
+      + bulkCreate()
+      + bulkStore()
+      + rekap()
+      + rekapPdf()
+    }
+    
+    class "KelasSiswaController" as AdminKelasSiswaController {
+      + index()
+      + create()
+      + store()
+      + edit()
+      + update()
+      + destroy()
+    }
+    
+    class "NilaiController" as AdminNilaiController {
+      + index()
+      + create()
+      + store()
+      + edit()
+      + update()
+      + destroy()
+      + bulkCreate()
+      + bulkStore()
+    }
+    
+    class "UserController" as AdminUserController {
+      + index()
+      + create()
+      + store()
+      + edit()
+      + update()
+      + destroy()
+    }
+  }
+  
+  class "AuthController" {
+    + showLoginForm()
+    + login()
+    + logout()
+  }
+  
+  class "KelasController" {
+    + index()
+    + create()
+    + store()
+    + edit()
+    + update()
+    + destroy()
+  }
+  
+  class "LandingController" {
+    + index()
+  }
+  
+  class "MataPelajaranController" {
+    + index()
+    + create()
+    + store()
+    + edit()
+    + update()
+    + destroy()
+  }
+}
+
+' Models
+package "Models" {
+  class "User" {
+    + id: int
+    + name: string
+    + email: string
+    + password: string
+    + role: string
+    + nkk: string
+    + nisn: string
+    + kelas(): hasMany
+    + kelasSiswa(): hasMany
+  }
+  
+  class "Kelas" {
+    + id: int
+    + name: string
+    + tahun_ajaran: string
+    + siswa(): belongsToMany
+    + kelasSiswa(): hasMany
+    + jadwal(): hasMany
+  }
+  
+  class "KelasSiswa" {
+    + id: int
+    + kelas_id: int
+    + user_id: int
+    + kelas(): belongsTo
+    + user(): belongsTo
+    + kehadiran(): hasMany
+    + nilai(): hasMany
+  }
+  
+  class "MataPelajaran" {
+    + id: int
+    + name: string
+    + jadwal(): hasMany
+    + nilai(): hasMany
+  }
+  
+  class "Jadwal" {
+    + id: int
+    + kelas_id: int
+    + mata_pelajaran_id: int
+    + hari: string
+    + jam_mulai: time
+    + jam_selesai: time
+    + kelas(): belongsTo
+    + mataPelajaran(): belongsTo
+  }
+  
+  class "Kehadiran" {
+    + id: int
+    + kelas_siswa_id: int
+    + tanggal: date
+    + status: string
+    + keterangan: string
+    + lampiran: string
+    + kelasSiswa(): belongsTo
+  }
+  
+  class "Nilai" {
+    + id: int
+    + kelas_siswa_id: int
+    + mata_pelajaran_id: int
+    + nilai: float
+    + keterangan: string
+    + kelasSiswa(): belongsTo
+    + mataPelajaran(): belongsTo
+  }
+}
+
+' Controller Inheritance
+BaseController <|-- AdminDashboardController
+BaseController <|-- AdminJadwalController
+BaseController <|-- AdminKehadiranController
+BaseController <|-- AdminKelasSiswaController
+BaseController <|-- AdminNilaiController
+BaseController <|-- AdminUserController
+BaseController <|-- AuthController
+BaseController <|-- KelasController
+BaseController <|-- LandingController
+BaseController <|-- MataPelajaranController
+
+' Model Relationships
+User "1" -- "0..*" KelasSiswa
+Kelas "1" -- "0..*" KelasSiswa
+KelasSiswa "1" -- "0..*" Kehadiran
+KelasSiswa "1" -- "0..*" Nilai
+MataPelajaran "1" -- "0..*" Nilai
+Kelas "1" -- "0..*" Jadwal
+MataPelajaran "1" -- "0..*" Jadwal
+
+' Controller-Model Relationships (dashed lines)
+AdminUserController ..> User : manages
+KelasController ..> Kelas : manages
+AdminKelasSiswaController ..> KelasSiswa : manages
+MataPelajaranController ..> MataPelajaran : manages
+AdminJadwalController ..> Jadwal : manages
+AdminKehadiranController ..> Kehadiran : manages
+AdminNilaiController ..> Nilai : manages
+
+@enduml

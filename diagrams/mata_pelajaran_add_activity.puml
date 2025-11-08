@@ -1,0 +1,27 @@
+@startuml Tambah Mata Pelajaran - Diagram Aktivitas
+title Diagram Aktivitas - Tambah Mata Pelajaran
+
+|Admin|
+start
+:Akses halaman mata pelajaran;
+:Klik tombol tambah mata pelajaran;
+:Isi nama mata pelajaran;
+:Isi deskripsi (opsional);
+:Klik tombol simpan;
+
+|Sistem|
+:Validasi input;
+
+if (Input valid?) then (ya)
+  :Buat mata pelajaran baru;
+  :Simpan ke database;
+  :Tampilkan pesan sukses;
+else (tidak)
+  :Tampilkan pesan error;
+  :Kembalikan ke form dengan data yang sudah diisi;
+endif
+
+|Admin|
+:Melihat hasil;
+stop
+@enduml

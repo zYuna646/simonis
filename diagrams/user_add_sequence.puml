@@ -1,0 +1,44 @@
+@startuml Tambah User - Diagram Sequence
+title Diagram Sequence - Tambah User
+
+actor Admin
+participant "Browser" as Browser
+participant "UserController" as Controller
+participant "User Model" as User
+participant "Role Model" as Role
+database "Database" as DB
+
+Admin -> Browser: Akses halaman tambah user
+Browser -> Controller: create()
+Controller -> Role: all()
+Role -> DB: SELECT * FROM roles
+DB --> Role: Data roles
+Role --> Controller: roles
+Controller --> Browser: Form tambah user dengan daftar roles
+Browser --> Admin: Tampilkan form
+
+Admin -> Browser: Isi form dan submit
+Browser -> Controller: store(request)
+Controller -> Controller: Validasi input
+
+alt Validasi Berhasil
+    Controller -> User: create(validated_data)
+    User -> DB: INSERT INTO users
+    DB --> User: User baru
+    User --> Controller: user
+    
+    Controller -> User: assignRole(role)
+    User -> Role: attach(role_id, user_id)
+    Role -> DB: INSERT INTO role_user
+    DB --> Role: Success
+    Role --> User: Success
+    User --> Controller: Success
+    
+    Controller --> Browser: Redirect dengan pesan sukses
+    Browser --> Admin: Tampilkan halaman user dengan pesan sukses
+else Validasi Gagal
+    Controller --> Browser: Redirect kembali dengan error
+    Browser --> Admin: Tampilkan form dengan pesan error
+end
+
+@enduml

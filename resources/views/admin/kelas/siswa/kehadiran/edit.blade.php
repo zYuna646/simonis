@@ -19,10 +19,18 @@
                 <p class="text-sm text-gray-600">Kelas:</p>
                 <p class="font-medium text-gray-800">{{ $kelas->name }}</p>
             </div>
+            <div>
+                <p class="text-sm text-gray-600">Mata Pelajaran (otomatis):</p>
+                <p class="font-medium text-gray-800">{{ $mataPelajaran->name ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Guru Pengajar:</p>
+                <p class="font-medium text-gray-800">{{ $mataPelajaran->guru->name ?? '-' }}</p>
+            </div>
         </div>
     </div>
 
-    <form action="{{ route('admin.kelas.siswa.kehadiran.update', [$kelas->id, $siswa->id, $kehadiran->id]) }}" method="POST">
+    <form action="{{ route('admin.kelas.siswa.kehadiran.update', [$kelas->id, $siswa->id, $kehadiran->id]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -55,8 +63,21 @@
             @enderror
         </div>
 
+        <div class="mb-4">
+            <label for="lampiran" class="block text-sm font-medium text-gray-700 mb-1">Lampiran (Opsional)</label>
+            @if($kehadiran->lampiran)
+                <p class="text-sm text-gray-600 mb-2">Lampiran saat ini: 
+                    <a href="{{ Storage::url($kehadiran->lampiran) }}" target="_blank" class="text-blue-600 underline">Lihat</a>
+                </p>
+            @endif
+            <input type="file" name="lampiran" id="lampiran" class="w-full">
+            @error('lampiran')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
         <div class="flex justify-end">
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Simpan Perubahan</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Perbarui</button>
         </div>
     </form>
 </div>

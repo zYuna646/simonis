@@ -1,0 +1,48 @@
+@startuml Login - Diagram Sequence
+title Diagram Sequence - Login
+
+actor Pengguna
+participant "Browser" as Browser
+participant "AuthController" as Controller
+participant "Auth Facade" as Auth
+participant "User Model" as User
+database "Database" as DB
+
+Pengguna -> Browser: Akses halaman login
+Browser -> Controller: showLoginForm()
+Controller --> Browser: Tampilkan form login
+
+Pengguna -> Browser: Isi form dan submit
+Browser -> Controller: login(request)
+Controller -> Controller: Validasi input
+
+alt Input Valid
+    Controller -> Auth: attempt(credentials)
+    Auth -> User: Cek kredensial
+    User -> DB: Query user
+    DB --> User: Data user
+    
+    alt Kredensial Benar
+        User --> Auth: User ditemukan
+        Auth --> Controller: Login berhasil
+        Controller -> Controller: Regenerate session
+        
+        alt User adalah Admin
+            Controller --> Browser: Redirect ke /admin/dashboard
+        else User bukan Admin
+            Controller --> Browser: Redirect ke /dashboard
+        end
+        
+        Browser --> Pengguna: Tampilkan dashboard
+    else Kredensial Salah
+        User --> Auth: User tidak ditemukan
+        Auth --> Controller: Login gagal
+        Controller --> Browser: Redirect ke login dengan error
+        Browser --> Pengguna: Tampilkan form login dengan pesan error
+    end
+else Input Tidak Valid
+    Controller --> Browser: Redirect ke login dengan error validasi
+    Browser --> Pengguna: Tampilkan form login dengan pesan error validasi
+end
+
+@enduml

@@ -1,0 +1,28 @@
+@startuml Tambah Kelas - Diagram Aktivitas
+title Diagram Aktivitas - Tambah Kelas
+
+|Admin/Guru|
+start
+:Akses halaman kelas;
+:Klik tombol tambah kelas;
+:Isi formulir data kelas;
+:Pilih guru pengajar;
+:Pilih mata pelajaran;
+:Klik tombol simpan;
+
+|Sistem|
+:Validasi input;
+
+if (Input valid?) then (ya)
+  :Buat kelas baru;
+  :Simpan ke database;
+  :Tampilkan pesan sukses;
+else (tidak)
+  :Tampilkan pesan error;
+  :Kembalikan ke form dengan data yang sudah diisi;
+endif
+
+|Admin/Guru|
+:Melihat hasil;
+stop
+@enduml

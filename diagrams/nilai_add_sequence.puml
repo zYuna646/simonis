@@ -1,0 +1,32 @@
+@startuml Tambah Nilai - Diagram Sequence
+title Diagram Sequence - Tambah Nilai
+
+actor "Admin/Guru" as Admin
+participant "Browser" as Browser
+participant "NilaiController" as Controller
+participant "Nilai Model" as Nilai
+database "Database" as DB
+
+Admin -> Browser: Akses halaman tambah nilai
+Browser -> Controller: create(kelas_id, siswa_id)
+Controller --> Browser: Form tambah nilai
+Browser --> Admin: Tampilkan form
+
+Admin -> Browser: Isi form dan submit
+Browser -> Controller: store(request, kelas_id, siswa_id)
+Controller -> Controller: Validasi input
+
+alt Validasi Berhasil
+    Controller -> Nilai: create(validated_data)
+    Nilai -> DB: INSERT INTO nilai
+    DB --> Nilai: Nilai baru
+    Nilai --> Controller: nilai
+    
+    Controller --> Browser: Redirect dengan pesan sukses
+    Browser --> Admin: Tampilkan halaman nilai dengan pesan sukses
+else Validasi Gagal
+    Controller --> Browser: Redirect kembali dengan error
+    Browser --> Admin: Tampilkan form dengan pesan error
+end
+
+@enduml

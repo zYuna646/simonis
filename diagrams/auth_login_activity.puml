@@ -1,0 +1,36 @@
+@startuml Login - Diagram Aktivitas
+title Diagram Aktivitas - Login
+
+|Pengguna|
+start
+:Mengakses halaman login;
+:Mengisi form login (email dan password);
+:Klik tombol login;
+
+|Sistem|
+:Validasi input;
+
+if (Input valid?) then (ya)
+  :Cek kredensial di database;
+  if (Kredensial benar?) then (ya)
+    :Buat session;
+    :Cek role pengguna;
+    if (Role admin?) then (ya)
+      :Redirect ke halaman admin dashboard;
+    else (tidak)
+      :Redirect ke halaman dashboard;
+    endif
+  else (tidak)
+    :Tampilkan pesan error kredensial;
+    :Redirect kembali ke halaman login;
+  endif
+else (tidak)
+  :Tampilkan pesan error validasi;
+  :Redirect kembali ke halaman login;
+endif
+
+|Pengguna|
+:Melihat halaman dashboard;
+
+stop
+@enduml

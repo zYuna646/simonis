@@ -1,0 +1,32 @@
+@startuml Dashboard - Diagram Aktivitas
+title Diagram Aktivitas - Melihat Dashboard
+
+|Pengguna|
+start
+:Login ke sistem;
+:Akses halaman dashboard;
+
+|Sistem|
+:Identifikasi role pengguna;
+
+if (Role = Admin?) then (ya)
+  :Ambil data total users, roles, dan permissions;
+  :Tampilkan dashboard admin;
+elseif (Role = Guru?) then (ya)
+  :Ambil data kelas yang diajar;
+  :Hitung total siswa;
+  :Tampilkan dashboard guru;
+elseif (Role = Siswa?) then (ya)
+  :Ambil data kelas yang diikuti;
+  :Ambil data kehadiran dan nilai;
+  :Tampilkan dashboard siswa;
+elseif (Role = Orang Tua?) then (ya)
+  :Ambil data anak;
+  :Ambil data kelas, kehadiran, dan nilai anak;
+  :Tampilkan dashboard orang tua;
+endif
+
+|Pengguna|
+:Melihat informasi sesuai role;
+stop
+@enduml
