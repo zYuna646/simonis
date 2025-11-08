@@ -19,6 +19,16 @@
             <p>{{ session('success') }}</p>
         </div>
     @endif
+    @if(isset($mataPelajaran))
+        <div class="bg-blue-50 border border-blue-100 text-blue-800 p-4 mb-4 rounded">
+            <p>
+                Mata Pelajaran (otomatis): <span class="font-medium">{{ $mataPelajaran->name ?? '-' }}</span>
+                @if($mataPelajaran && $mataPelajaran->guru)
+                    — Guru: <span class="font-medium">{{ $mataPelajaran->guru->name }}</span>
+                @endif
+            </p>
+        </div>
+    @endif
 
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white border border-gray-200 rounded-lg">
@@ -28,7 +38,6 @@
                     <th class="px-4 py-2 text-left text-gray-700">Nilai</th>
                     <th class="px-4 py-2 text-left text-gray-700">Jenis</th>
                     <th class="px-4 py-2 text-left text-gray-700">Tanggal</th>
-                    <th class="px-4 py-2 text-left text-gray-700">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,18 +47,10 @@
                     <td class="px-4 py-2">{{ $n->nilai }}</td>
                     <td class="px-4 py-2">{{ $n->jenis }}</td>
                     <td class="px-4 py-2">{{ $n->tanggal ? $n->tanggal->format('d-m-Y') : '-' }}</td>
-                    <td class="px-4 py-2">
-                        <a href="{{ route('admin.kelas.siswa.nilai.edit', [$kelas->id, $siswa->id, $n->id]) }}" class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition">Edit</a>
-                        <form action="{{ route('admin.kelas.siswa.nilai.destroy', [$kelas->id, $siswa->id, $n->id]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus nilai ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition">Hapus</button>
-                        </form>
-                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">Belum ada nilai untuk siswa ini.</td>
+                    <td colspan="4" class="px-4 py-6 text-center text-gray-500">Belum ada nilai untuk siswa ini.</td>
                 </tr>
                 @endforelse
             </tbody>

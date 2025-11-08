@@ -31,13 +31,8 @@ class UserController extends Controller
             'role' => 'required|exists:roles,name',
         ];
         
-        // Tambahkan validasi untuk NKK jika role siswa atau orang tua
-        if (in_array($request->role, ['siswa', 'orang tua'])) {
-            $rules['nkk'] = 'required|string|max:255';
-        }
-        
-        // Tambahkan validasi untuk NISN jika role siswa
-        if ($request->role === 'siswa') {
+        // Validasi NISN: wajib untuk Siswa dan Orang Tua (NISN Anak)
+        if (in_array($request->role, ['siswa', 'orang_tua', 'orang tua'])) {
             $rules['nisn'] = 'required|string|max:255';
         }
         
@@ -49,13 +44,27 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ];
         
-        // Tambahkan NKK dan NISN ke data user jika ada
-        if ($request->filled('nkk')) {
-            $userData['nkk'] = $request->nkk;
-        }
-        
-        if ($request->filled('nisn')) {
+        // Role-spesifik: set NISN dan relasi orang tua -> anak via NISN
+        if ($request->role === 'siswa') {
             $userData['nisn'] = $request->nisn;
+        } elseif (in_array($request->role, ['orang_tua', 'orang tua'])) {
+            // Cari anak berdasarkan NISN; anak harus ber-role siswa
+            $child = User::where('nisn', $request->nisn)
+                ->whereHas('roles', function($q){ $q->where('name', 'siswa'); })
+                ->first();
+            if (!$child) {
+                return back()->withErrors(['nisn' => 'NISN anak tidak ditemukan. Pastikan NISN benar dan anak sudah terdaftar sebagai siswa.'])->withInput();
+            }
+            // Simpan NISN anak di field nisn milik orang tua
+            $userData['nisn'] = $request->nisn;
+            // Opsional: salin NKK anak jika tersedia untuk kompatibilitas lama
+            if (!empty($child->nkk)) {
+                $userData['nkk'] = $child->nkk;
+            }
+        }
+        // Jika ada NKK diinput manual (role lain), simpan apa adanya
+        if ($request->filled('nkk') && !isset($userData['nkk'])) {
+            $userData['nkk'] = $request->nkk;
         }
         
         $user = User::create($userData);
@@ -84,13 +93,8 @@ class UserController extends Controller
             $rules['password'] = 'string|min:8|confirmed';
         }
         
-        // Tambahkan validasi untuk NKK jika role siswa atau orang tua
-        if (in_array($request->role, ['siswa', 'orang tua'])) {
-            $rules['nkk'] = 'required|string|max:255';
-        }
-        
-        // Tambahkan validasi untuk NISN jika role siswa
-        if ($request->role === 'siswa') {
+        // Validasi NISN: wajib untuk Siswa dan Orang Tua (NISN Anak)
+        if (in_array($request->role, ['siswa', 'orang_tua', 'orang tua'])) {
             $rules['nisn'] = 'required|string|max:255';
         }
 
@@ -101,13 +105,29 @@ class UserController extends Controller
             'email' => $request->email,
         ];
         
-        // Tambahkan NKK dan NISN ke data user jika ada
-        if ($request->filled('nkk')) {
-            $userData['nkk'] = $request->nkk;
-        }
-        
-        if ($request->filled('nisn')) {
+        // Role-spesifik: update NISN dan relasi orang tua -> anak via NISN
+        if ($request->role === 'siswa') {
             $userData['nisn'] = $request->nisn;
+            // NKK tidak diperlukan untuk siswa
+        } elseif (in_array($request->role, ['orang_tua', 'orang tua'])) {
+            $child = User::where('nisn', $request->nisn)
+                ->whereHas('roles', function($q){ $q->where('name', 'siswa'); })
+                ->first();
+            if (!$child) {
+                return back()->withErrors(['nisn' => 'NISN anak tidak ditemukan. Pastikan NISN benar dan anak sudah terdaftar sebagai siswa.'])->withInput();
+            }
+            $userData['nisn'] = $request->nisn;
+            if (!empty($child->nkk)) {
+                $userData['nkk'] = $child->nkk;
+            } else {
+                // Kosongkan NKK jika tidak digunakan lagi
+                $userData['nkk'] = null;
+            }
+        } else {
+            // Role lain: simpan NKK jika diisi
+            if ($request->filled('nkk')) {
+                $userData['nkk'] = $request->nkk;
+            }
         }
         
         $user->update($userData);

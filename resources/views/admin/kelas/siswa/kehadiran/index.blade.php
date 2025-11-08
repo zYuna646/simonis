@@ -29,7 +29,6 @@
                     <th class="px-4 py-2 text-left text-gray-700">Tanggal</th>
                     <th class="px-4 py-2 text-left text-gray-700">Status</th>
                     <th class="px-4 py-2 text-left text-gray-700">Keterangan</th>
-                    <th class="px-4 py-2 text-left text-gray-700">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,18 +47,10 @@
                         @endif
                     </td>
                     <td class="px-4 py-2">{{ $k->keterangan ?? '-' }}</td>
-                    <td class="px-4 py-2">
-                        <a href="{{ route('admin.kelas.siswa.kehadiran.edit', [$kelas->id, $siswa->id, $k->id]) }}" class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition">Edit</a>
-                        <form action="{{ route('admin.kelas.siswa.kehadiran.destroy', [$kelas->id, $siswa->id, $k->id]) }}" method="POST" class="inline" onsubmit="return confirm('Hapus kehadiran ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200 transition">Hapus</button>
-                        </form>
-                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="px-4 py-6 text-center text-gray-500">Belum ada data kehadiran.</td>
+                    <td colspan="3" class="px-4 py-6 text-center text-gray-500">Belum ada data kehadiran.</td>
                 </tr>
                 @endforelse
             </tbody>

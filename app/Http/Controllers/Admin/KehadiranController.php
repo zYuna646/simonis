@@ -318,6 +318,6 @@ class KehadiranController extends Controller
         $filename = 'rekap-kehadiran-' . preg_replace('/[^A-Za-z0-9-]+/', '-', strtolower($kelas->name)) . '.pdf';
         return response($dompdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
 }

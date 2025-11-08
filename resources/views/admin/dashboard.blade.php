@@ -37,6 +37,33 @@
                 </dl>
             </div>
         </div>
+        <!-- Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Total Guru</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $data['totalGuru'] }}</dd>
+                </dl>
+            </div>
+        </div>
+        <!-- Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Total Orang Tua</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $data['totalOrangTua'] }}</dd>
+                </dl>
+            </div>
+        </div>
+        <!-- Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <dl>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Total Siswa</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $data['totalSiswa'] }}</dd>
+                </dl>
+            </div>
+        </div>
     </div>
     
     @elseif(Auth::user()->hasRole('guru'))
@@ -103,6 +130,23 @@
             </div>
             
             <div class="p-5">
+                <!-- Pilih Mapel -->
+                <form method="GET" action="{{ route('admin.dashboard') }}" class="mb-4 flex items-end space-x-2">
+                    <div>
+                        <label for="mapel_id_{{ $kelas->id }}" class="block text-xs font-medium text-gray-700 mb-1">Pilih Mapel</label>
+                        <select id="mapel_id_{{ $kelas->id }}" name="mapel_id" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">-- Semua Mapel --</option>
+                            @foreach(($data['mapel'][$kelas->id] ?? []) as $mp)
+                                <option value="{{ $mp->id }}" {{ (request('kelas_id') == $kelas->id && request('mapel_id') == $mp->id) ? 'selected' : '' }}>{{ $mp->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <input type="hidden" name="kelas_id" value="{{ $kelas->id }}" />
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Pilih Mapel</button>
+                </form>
+                @if(request('kelas_id') == $kelas->id && request('mapel_id'))
+                    <p class="text-sm text-gray-600 mb-2">Filter mapel: <span class="font-medium">{{ optional(collect($data['mapel'][$kelas->id] ?? [])->firstWhere('id', (int)request('mapel_id')))->name }}</span></p>
+                @endif
                 <h4 class="font-medium text-gray-900 mb-3">Kehadiran Terbaru</h4>
                 @if(count($data['kehadiran'][$kelas->id]) > 0)
                 <div class="overflow-x-auto">
@@ -151,7 +195,6 @@
                                 <th class="py-2 px-4 text-left">Tanggal</th>
                                 <th class="py-2 px-4 text-left">Jenis</th>
                                 <th class="py-2 px-4 text-left">Nilai</th>
-                                <th class="py-2 px-4 text-left">Keterangan</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 text-sm">
@@ -170,7 +213,6 @@
                                     @endif
                                 </td>
                                 <td class="py-2 px-4">{{ $nilai->nilai }}</td>
-                                <td class="py-2 px-4">{{ $nilai->keterangan ?? '-' }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -256,7 +298,6 @@
                                     <th class="py-2 px-4 text-left">Tanggal</th>
                                     <th class="py-2 px-4 text-left">Jenis</th>
                                     <th class="py-2 px-4 text-left">Nilai</th>
-                                    <th class="py-2 px-4 text-left">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-600 text-sm">
@@ -265,17 +306,16 @@
                                     <td class="py-2 px-4">{{ $nilai->tanggal->format('d/m/Y') }}</td>
                                     <td class="py-2 px-4">
                                         @if($nilai->jenis == 'ulangan')
-                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Ulangan</span>
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Ulangan</span>
                                         @elseif($nilai->jenis == 'tugas')
-                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Tugas</span>
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Tugas</span>
                                         @elseif($nilai->jenis == 'praktek')
-                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Praktek</span>
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Praktek</span>
                                         @elseif($nilai->jenis == 'remedial')
-                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Remedial</span>
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Remedial</span>
                                         @endif
                                     </td>
                                     <td class="py-2 px-4">{{ $nilai->nilai }}</td>
-                                    <td class="py-2 px-4">{{ $nilai->keterangan ?? '-' }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

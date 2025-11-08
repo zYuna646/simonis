@@ -6,7 +6,7 @@
         <h2 class="text-xl font-semibold text-gray-800">Rekap Kehadiran Kelas: {{ $kelas->name }}</h2>
         <div class="flex space-x-2">
             <a href="{{ route('admin.kelas.kehadiran.rekap.pdf', $kelas->id) }}" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition" target="_blank">
-                <i class="fas fa-file-pdf mr-2"></i>Download PDF
+                <i class="fas fa-file-pdf mr-2"></i>Print PDF
             </a>
             <a href="{{ route('admin.kelas.siswa.index', $kelas->id) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali

@@ -108,7 +108,9 @@
                     <tr>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Nama</th>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">NISN</th>
+                        @if(($context ?? null) !== 'nilai')
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -116,6 +118,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-4 border-b border-gray-200 font-medium">{{ $s->name }}</td>
                             <td class="py-3 px-4 border-b border-gray-200">{{ $s->nisn ?? '-' }}</td>
+                            @if(($context ?? null) !== 'nilai')
                             <td class="py-3 px-4 border-b border-gray-200">
                                 <div class="flex space-x-2">
                                     @if($context === 'kehadiran')
@@ -143,10 +146,11 @@
                                     </form>
                                 </div>
                             </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="py-4 px-4 text-center text-gray-500">Belum ada siswa di kelas ini.</td>
+                            <td colspan="{{ (($context ?? null) === 'nilai') ? 2 : 3 }}" class="py-4 px-4 text-center text-gray-500">Belum ada siswa di kelas ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -24,6 +24,10 @@ class DashboardController extends Controller
             $data['totalUsers'] = User::count();
             $data['totalRoles'] = Role::count();
             $data['totalPermissions'] = Permission::count();
+            // Tambahan: statistik per role
+            $data['totalGuru'] = \App\Models\User::role('guru')->count();
+            $data['totalSiswa'] = \App\Models\User::role('siswa')->count();
+            $data['totalOrangTua'] = \App\Models\User::role('orang_tua')->count();
         } 
         elseif ($user->hasRole('guru')) {
             // Data untuk guru
@@ -44,16 +48,35 @@ class DashboardController extends Controller
             $data['kelas'] = $kelas;
             $data['kehadiran'] = [];
             $data['nilai'] = [];
+            $data['mapel'] = [];
+            $selectedMapelId = request()->get('mapel_id');
+            $selectedKelasId = (int) request()->get('kelas_id');
             
             foreach ($kelas as $k) {
+                // Opsi mapel per kelas (unik)
+                $mapelOptions = \App\Models\Jadwal::with('mataPelajaran')
+                    ->where('kelas_id', $k->id)
+                    ->get()
+                    ->map(function($j){ return $j->mataPelajaran; })
+                    ->filter()
+                    ->unique('id')
+                    ->values();
+                $data['mapel'][$k->id] = $mapelOptions;
+
                 $data['kehadiran'][$k->id] = Kehadiran::where('user_id', $user->id)
                     ->where('kelas_id', $k->id)
+                    ->when($selectedMapelId && $selectedKelasId === $k->id, function($q) use ($selectedMapelId) {
+                        $q->where('mata_pelajaran_id', (int) $selectedMapelId);
+                    })
                     ->orderBy('tanggal', 'desc')
                     ->take(5)
                     ->get();
                     
                 $data['nilai'][$k->id] = Nilai::where('user_id', $user->id)
                     ->where('kelas_id', $k->id)
+                    ->when($selectedMapelId && $selectedKelasId === $k->id, function($q) use ($selectedMapelId) {
+                        $q->where('mata_pelajaran_id', (int) $selectedMapelId);
+                    })
                     ->orderBy('tanggal', 'desc')
                     ->take(5)
                     ->get();
@@ -61,12 +84,25 @@ class DashboardController extends Controller
         } 
         elseif ($user->hasRole('orang_tua')) {
             // Data untuk orang tua
-            $anak = User::where('nkk', $user->nkk)
-                ->whereHas('roles', function($q) {
-                    $q->where('name', 'siswa');
-                })
-                ->get();
-                
+            // Utamakan relasi berdasarkan NISN anak yang disimpan di akun orang tua
+            $anak = collect();
+            if (!empty($user->nisn)) {
+                $anak = User::where('nisn', $user->nisn)
+                    ->whereHas('roles', function($q) {
+                        $q->where('name', 'siswa');
+                    })
+                    ->get();
+            }
+
+            // Fallback: jika NISN tidak ada/anak tidak ditemukan, gunakan NKK lama bila tersedia
+            if ($anak->isEmpty() && !empty($user->nkk)) {
+                $anak = User::where('nkk', $user->nkk)
+                    ->whereHas('roles', function($q) {
+                        $q->where('name', 'siswa');
+                    })
+                    ->get();
+            }
+
             $data['anak'] = $anak;
             $data['kehadiran'] = [];
             $data['nilai'] = [];

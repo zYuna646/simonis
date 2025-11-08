@@ -21,7 +21,7 @@
         @else
             <form action="{{ route('admin.kelas.nilai.bulk.store', $kelas->id) }}" method="POST">
                 @csrf
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div>
                         <label for="tanggal" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
                         <input type="date" name="tanggal" id="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -42,16 +42,15 @@
                         @enderror
                     </div>
                     <div>
-                        <label for="mata_pelajaran_id" class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
-                        <select name="mata_pelajaran_id" id="mata_pelajaran_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">-- Pilih Mata Pelajaran --</option>
-                            @foreach(\App\Models\MataPelajaran::orderBy('name')->get() as $mp)
-                                <option value="{{ $mp->id }}" {{ old('mata_pelajaran_id') == $mp->id ? 'selected' : '' }}>{{ $mp->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('mata_pelajaran_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
+                        <div class="px-3 py-2 border border-gray-200 rounded-md bg-gray-50">
+                            @if($mataPelajaran)
+                                <p class="text-gray-800 font-medium">{{ $mataPelajaran->name }}</p>
+                                <p class="text-gray-600 text-sm">Guru: {{ $mataPelajaran->guru->name ?? '-' }}</p>
+                            @else
+                                <p class="text-gray-600">Tidak ada mata pelajaran terdeteksi untuk guru/kelas ini.</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -122,6 +121,14 @@
                 <div>
                     <p class="text-sm text-gray-600">Kelas:</p>
                     <p class="font-medium text-gray-800">{{ $kelas->name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Mata Pelajaran (otomatis):</p>
+                    <p class="font-medium text-gray-800">{{ $mataPelajaran->name ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Guru Pengajar:</p>
+                    <p class="font-medium text-gray-800">{{ $mataPelajaran->guru->name ?? '-' }}</p>
                 </div>
             </div>
         </div>

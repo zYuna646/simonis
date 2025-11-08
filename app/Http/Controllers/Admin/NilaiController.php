@@ -7,10 +7,40 @@ use App\Models\Nilai;
 use App\Models\Kelas;
 use App\Models\User;
 use App\Models\KelasSiswa;
+use App\Models\Jadwal;
+use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
 
 class NilaiController extends Controller
 {
+    /**
+     * Ambil mata pelajaran yang diajar oleh guru untuk kelas ini.
+     * Prioritas: guru login; jika admin, gunakan guru yang diassign ke kelas.
+     * Tidak bergantung pada hari.
+     */
+    protected function resolveMataPelajaranIdForKelas(int $kelasId): ?int
+    {
+        $kelas = Kelas::find($kelasId);
+        if (!$kelas) {
+            return null;
+        }
+
+        $guruId = auth()->user()->hasRole('guru') ? auth()->id() : ($kelas->user_id ?? null);
+
+        if ($guruId) {
+            $jadwalDenganGuru = Jadwal::where('kelas_id', $kelasId)
+                ->whereHas('mataPelajaran', function($q) use ($guruId) {
+                    $q->where('guru_id', $guruId);
+                })
+                ->first();
+            if ($jadwalDenganGuru) {
+                return $jadwalDenganGuru->mata_pelajaran_id;
+            }
+        }
+
+        $jadwalPertama = Jadwal::where('kelas_id', $kelasId)->first();
+        return $jadwalPertama ? $jadwalPertama->mata_pelajaran_id : null;
+    }
     public function index($kelasId, $userId)
     {
         $kelas = Kelas::findOrFail($kelasId);
@@ -19,16 +49,20 @@ class NilaiController extends Controller
             ->where('user_id', $userId)
             ->orderBy('tanggal', 'desc')
             ->get();
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas($kelas->id);
+        $mataPelajaran = $mataPelajaranId ? MataPelajaran::with('guru')->find($mataPelajaranId) : null;
         
-        return view('admin.kelas.siswa.nilai.index', compact('kelas', 'siswa', 'nilais'));
+        return view('admin.kelas.siswa.nilai.index', compact('kelas', 'siswa', 'nilais', 'mataPelajaran'));
     }
 
     public function create($kelasId, $userId)
     {
         $kelas = Kelas::findOrFail($kelasId);
         $siswa = User::findOrFail($userId);
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas($kelas->id);
+        $mataPelajaran = $mataPelajaranId ? MataPelajaran::with('guru')->find($mataPelajaranId) : null;
         
-        return view('admin.kelas.siswa.nilai.create', compact('kelas', 'siswa'));
+        return view('admin.kelas.siswa.nilai.create', compact('kelas', 'siswa', 'mataPelajaran'));
     }
 
     public function store(Request $request, $kelasId, $userId)
@@ -40,9 +74,12 @@ class NilaiController extends Controller
             'keterangan' => 'nullable|string',
         ]);
         
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas((int)$kelasId);
+        
         Nilai::create([
             'user_id' => $userId,
             'kelas_id' => $kelasId,
+            'mata_pelajaran_id' => $mataPelajaranId,
             'jenis' => $request->jenis,
             'tanggal' => $request->tanggal,
             'nilai' => $request->nilai,
@@ -58,8 +95,10 @@ class NilaiController extends Controller
         $kelas = Kelas::findOrFail($kelasId);
         $siswa = User::findOrFail($userId);
         $nilai = Nilai::findOrFail($nilaiId);
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas($kelas->id);
+        $mataPelajaran = $mataPelajaranId ? MataPelajaran::with('guru')->find($mataPelajaranId) : null;
         
-        return view('admin.kelas.siswa.nilai.edit', compact('kelas', 'siswa', 'nilai'));
+        return view('admin.kelas.siswa.nilai.edit', compact('kelas', 'siswa', 'nilai', 'mataPelajaran'));
     }
 
     public function update(Request $request, $kelasId, $userId, $nilaiId)
@@ -72,12 +111,15 @@ class NilaiController extends Controller
         ]);
         
         $nilai = Nilai::findOrFail($nilaiId);
-        $nilai->update([
+        $data = [
             'jenis' => $request->jenis,
             'tanggal' => $request->tanggal,
             'nilai' => $request->nilai,
             'keterangan' => $request->keterangan,
-        ]);
+        ];
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas((int)$kelasId);
+        $data['mata_pelajaran_id'] = $mataPelajaranId;
+        $nilai->update($data);
         
         return redirect()->route('admin.kelas.siswa.nilai.index', [$kelasId, $userId])
             ->with('success', 'Data nilai berhasil diperbarui');
@@ -102,8 +144,11 @@ class NilaiController extends Controller
             ->orderBy('name')
             ->get();
 
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas($kelas->id);
+        $mataPelajaran = $mataPelajaranId ? MataPelajaran::with('guru')->find($mataPelajaranId) : null;
+
         // Gunakan view create yang sama, tetapi akan mendeteksi koleksi siswa untuk mode bulk
-        return view('admin.kelas.siswa.nilai.create', compact('kelas', 'siswa'));
+        return view('admin.kelas.siswa.nilai.create', compact('kelas', 'siswa', 'mataPelajaran'));
     }
 
     public function bulkStore(Request $request, $kelasId)
@@ -111,7 +156,6 @@ class NilaiController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jenis' => 'required|in:ulangan,tugas,praktek,remedial',
-            'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
             'nilai' => 'required|array',
             'nilai.*' => 'nullable|numeric|min:0|max:100',
             'keterangan' => 'array',
@@ -119,6 +163,7 @@ class NilaiController extends Controller
             'simpan' => 'array',
         ]);
 
+        $mataPelajaranId = $this->resolveMataPelajaranIdForKelas((int)$kelasId);
         $simpan = $request->input('simpan', []);
         $nilaiInput = $request->input('nilai', []);
         $keteranganInput = $request->input('keterangan', []);
@@ -131,7 +176,7 @@ class NilaiController extends Controller
             Nilai::create([
                 'user_id' => $userId,
                 'kelas_id' => $kelasId,
-                'mata_pelajaran_id' => $request->mata_pelajaran_id,
+                'mata_pelajaran_id' => $mataPelajaranId,
                 'jenis' => $request->jenis,
                 'tanggal' => $request->tanggal,
                 'nilai' => $nilaiInput[$userId],

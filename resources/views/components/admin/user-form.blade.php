@@ -54,16 +54,16 @@
     <div id="nkk-field" class="mb-4" style="display: none;">
         <label for="nkk" class="block text-sm font-medium text-gray-700 mb-1">NKK</label>
         <input type="text" name="nkk" id="nkk" value="{{ old('nkk', $user ? $user->nkk : '') }}" 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="(Tidak diperlukan untuk Siswa/Orang Tua)">
         @error('nkk')
             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
         @enderror
     </div>
 
     <div id="nisn-field" class="mb-4" style="display: none;">
-        <label for="nisn" class="block text-sm font-medium text-gray-700 mb-1">NISN</label>
+        <label for="nisn" id="nisn-label" class="block text-sm font-medium text-gray-700 mb-1">NISN</label>
         <input type="text" name="nisn" id="nisn" value="{{ old('nisn', $user ? $user->nisn : '') }}" 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan NISN">
         @error('nisn')
             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
         @enderror
@@ -84,6 +84,7 @@
         const roleSelect = document.getElementById('role');
         const nkkField = document.getElementById('nkk-field');
         const nisnField = document.getElementById('nisn-field');
+        const nisnLabel = document.getElementById('nisn-label');
         
         // Initial check
         toggleFields(roleSelect.value);
@@ -94,15 +95,19 @@
         });
         
         function toggleFields(role) {
-            // NKK field - show for 'siswa' and 'orang tua' roles
-            if (role === 'siswa' || role === 'orang tua') {
-                nkkField.style.display = 'block';
-            } else {
-                nkkField.style.display = 'none';
-            }
-            
-            // NISN field - show only for 'siswa' role
-            if (role === 'siswa') {
+            // Normalisasi nilai role untuk variasi penamaan
+            const isSiswa = role === 'siswa';
+            const isOrangTua = role === 'orang_tua' || role === 'orang tua';
+
+            // NKK tidak digunakan lagi untuk Siswa/Orang Tua
+            nkkField.style.display = 'none';
+
+            // NISN: tampil untuk Siswa dan Orang Tua
+            if (isSiswa) {
+                nisnLabel.textContent = 'NISN';
+                nisnField.style.display = 'block';
+            } else if (isOrangTua) {
+                nisnLabel.textContent = 'NISN Anak';
                 nisnField.style.display = 'block';
             } else {
                 nisnField.style.display = 'none';

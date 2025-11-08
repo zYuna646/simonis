@@ -19,6 +19,14 @@
                 <p class="text-sm text-gray-600">Kelas:</p>
                 <p class="font-medium text-gray-800">{{ $kelas->name }}</p>
             </div>
+            <div>
+                <p class="text-sm text-gray-600">Mata Pelajaran (otomatis):</p>
+                <p class="font-medium text-gray-800">{{ $mataPelajaran->name ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Guru Pengajar:</p>
+                <p class="font-medium text-gray-800">{{ $mataPelajaran->guru->name ?? '-' }}</p>
+            </div>
         </div>
     </div>
 
