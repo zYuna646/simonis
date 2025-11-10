@@ -10,7 +10,7 @@
                 <i class="fas fa-plus mr-2"></i>Tambah Kehadiran
             </a>
             @endif
-            <a href="{{ route('admin.kelas.siswa.index', $kelas->id) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            <a href="{{ url()->previous() }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar Siswa
             </a>
         </div>

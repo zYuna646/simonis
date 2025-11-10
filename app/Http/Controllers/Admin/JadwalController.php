@@ -63,13 +63,34 @@ class JadwalController extends Controller
             'mata_pelajaran_id' => 'required|exists:mata_pelajarans,id',
         ]);
 
+        // Cek duplikasi jadwal untuk kombinasi (kelas, mapel, hari)
+        $exists = Jadwal::where('kelas_id', $kelas->id)
+            ->where('mata_pelajaran_id', $request->mata_pelajaran_id)
+            ->where('hari', $request->hari)
+            ->exists();
+
+        if ($exists) {
+            $dayLabels = [
+                'senin' => 'Senin',
+                'selasa' => 'Selasa',
+                'rabu' => 'Rabu',
+                'kamis' => 'Kamis',
+                'jumat' => 'Jumat',
+                'sabtu' => 'Sabtu',
+            ];
+            $label = $dayLabels[$request->hari] ?? $request->hari;
+            return back()
+                ->withErrors(['mata_pelajaran_id' => "Mata pelajaran sudah dijadwalkan pada hari $label untuk kelas ini."])
+                ->withInput();
+        }
+
         Jadwal::create([
             'hari' => $request->hari,
             'kelas_id' => $kelas->id,
             'mata_pelajaran_id' => $request->mata_pelajaran_id,
         ]);
 
-        return redirect()->route('admin.kelas.jadwal.index', $kelas->id)
+        return redirect()->route('admin.kelas.siswa.index', [$kelas->id, 'context' => $request->input('context')])
             ->with('success', 'Jadwal berhasil ditambahkan.');
     }
 

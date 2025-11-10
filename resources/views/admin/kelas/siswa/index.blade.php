@@ -30,9 +30,11 @@
                     </a>
                 @endif
             @endif
+            @if(Auth::user()->hasRole('admin'))
             <a href="{{ route('admin.kelas.siswa.create', $kelas->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 <i class="fas fa-plus mr-2"></i>Tambah Siswa
             </a>
+            @endif
             <a href="{{ route('admin.kelas-card') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
@@ -49,9 +51,11 @@
     <div class="mb-8">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Jadwal Pelajaran</h3>
-            <a href="{{ route('admin.kelas.jadwal.create', $kelas->id) }}" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+            @if(($context ?? null) === 'kehadiran')
+            <a href="{{ route('admin.kelas.jadwal.create', [$kelas->id, 'context' => $context]) }}" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
                 <i class="fas fa-plus mr-2"></i>Tambah Jadwal
             </a>
+            @endif
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-200">
@@ -108,7 +112,7 @@
                     <tr>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Nama</th>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">NISN</th>
-                        @if(($context ?? null) !== 'nilai')
+                        @if(($context ?? null) !== 'nilai' && Auth::user()->hasRole('admin'))
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Aksi</th>
                         @endif
                     </tr>
@@ -118,7 +122,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="py-3 px-4 border-b border-gray-200 font-medium">{{ $s->name }}</td>
                             <td class="py-3 px-4 border-b border-gray-200">{{ $s->nisn ?? '-' }}</td>
-                            @if(($context ?? null) !== 'nilai')
+                            @if(($context ?? null) !== 'nilai' && Auth::user()->hasRole('admin'))
                             <td class="py-3 px-4 border-b border-gray-200">
                                 <div class="flex space-x-2">
                                     @if($context === 'kehadiran')
@@ -150,7 +154,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ (($context ?? null) === 'nilai') ? 2 : 3 }}" class="py-4 px-4 text-center text-gray-500">Belum ada siswa di kelas ini.</td>
+                            <td colspan="{{ (($context ?? null) !== 'nilai' && Auth::user()->hasRole('admin')) ? 3 : 2 }}" class="py-4 px-4 text-center text-gray-500">Belum ada siswa di kelas ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

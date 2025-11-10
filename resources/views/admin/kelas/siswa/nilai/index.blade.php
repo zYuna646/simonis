@@ -5,10 +5,12 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-semibold text-gray-800">Nilai Siswa: {{ $siswa->name }} (Kelas {{ $kelas->name }})</h2>
         <div class="flex space-x-2">
+            @if(Auth::user()->hasRole('admin'))
             <a href="{{ route('admin.kelas.siswa.nilai.create', [$kelas->id, $siswa->id]) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 <i class="fas fa-plus mr-2"></i>Tambah Nilai
             </a>
-            <a href="{{ route('admin.kelas.siswa.index', $kelas->id) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            @endif
+            <a href="{{ url()->previous() }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar Siswa
             </a>
         </div>

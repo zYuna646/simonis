@@ -146,83 +146,88 @@
                 </form>
                 @if(request('kelas_id') == $kelas->id && request('mapel_id'))
                     <p class="text-sm text-gray-600 mb-2">Filter mapel: <span class="font-medium">{{ optional(collect($data['mapel'][$kelas->id] ?? [])->firstWhere('id', (int)request('mapel_id')))->name }}</span></p>
-                @endif
-                <h4 class="font-medium text-gray-900 mb-3">Kehadiran Terbaru</h4>
-                @if(count($data['kehadiran'][$kelas->id]) > 0)
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
-                                <th class="py-2 px-4 text-left">Tanggal</th>
-                                <th class="py-2 px-4 text-left">Status</th>
-                                <th class="py-2 px-4 text-left">Keterangan</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm">
-                            @foreach($data['kehadiran'][$kelas->id] as $kehadiran)
-                            <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                <td class="py-2 px-4">{{ $kehadiran->tanggal->format('d/m/Y') }}</td>
-                                <td class="py-2 px-4">
-                                    @if($kehadiran->status == 'hadir')
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hadir</span>
-                                    @elseif($kehadiran->status == 'tidak_hadir')
-                                    <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Tidak Hadir</span>
-                                    @elseif($kehadiran->status == 'ijin')
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Ijin</span>
-                                    @elseif($kehadiran->status == 'sakit')
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Sakit</span>
-                                    @endif
-                                </td>
-                                <td class="py-2 px-4">{{ $kehadiran->keterangan ?? '-' }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3">
-                    <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, Auth::id()]) }}" class="text-blue-600 hover:text-blue-800 text-sm">Lihat semua kehadiran →</a>
-                </div>
+
+                    <h4 class="font-medium text-gray-900 mb-3">Kehadiran Terbaru</h4>
+                    @if(count($data['kehadiran'][$kelas->id]) > 0)
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-2 px-4 text-left">Tanggal</th>
+                                    <th class="py-2 px-4 text-left">Status</th>
+                                    <th class="py-2 px-4 text-left">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm">
+                                @foreach($data['kehadiran'][$kelas->id] as $kehadiran)
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-2 px-4">{{ $kehadiran->tanggal->format('d/m/Y') }}</td>
+                                    <td class="py-2 px-4">
+                                        @if($kehadiran->status == 'hadir')
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Hadir</span>
+                                        @elseif($kehadiran->status == 'tidak_hadir')
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Tidak Hadir</span>
+                                        @elseif($kehadiran->status == 'ijin')
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Ijin</span>
+                                        @elseif($kehadiran->status == 'sakit')
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Sakit</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2 px-4">{{ $kehadiran->keterangan ?? '-' }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, Auth::id()]) }}" class="text-blue-600 hover:text-blue-800 text-sm">Lihat semua kehadiran →</a>
+                    </div>
+                    @else
+                    <p class="text-gray-500 text-sm">Belum ada data kehadiran</p>
+                    @endif
+                    
+                    <h4 class="font-medium text-gray-900 mb-3 mt-6">Nilai Terbaru</h4>
+                    @if(count($data['nilai'][$kelas->id]) > 0)
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
+                                    <th class="py-2 px-4 text-left">Tanggal</th>
+                                    <th class="py-2 px-4 text-left">Jenis</th>
+                                    <th class="py-2 px-4 text-left">Nilai</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm">
+                                @foreach($data['nilai'][$kelas->id] as $nilai)
+                                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                    <td class="py-2 px-4">{{ $nilai->tanggal->format('d/m/Y') }}</td>
+                                    <td class="py-2 px-4">
+                                        @if($nilai->jenis == 'ulangan')
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Ulangan</span>
+                                        @elseif($nilai->jenis == 'tugas')
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Tugas</span>
+                                        @elseif($nilai->jenis == 'praktek')
+                                            <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Praktek</span>
+                                        @elseif($nilai->jenis == 'remedial')
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Remedial</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2 px-4">{{ $nilai->nilai }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, Auth::id()]) }}" class="text-blue-600 hover:text-blue-800 text-sm">Lihat semua nilai →</a>
+                    </div>
+                    @else
+                    <p class="text-gray-500 text-sm">Belum ada data nilai</p>
+                    @endif
                 @else
-                <p class="text-gray-500 text-sm">Belum ada data kehadiran</p>
-                @endif
-                
-                <h4 class="font-medium text-gray-900 mb-3 mt-6">Nilai Terbaru</h4>
-                @if(count($data['nilai'][$kelas->id]) > 0)
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white border border-gray-200">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
-                                <th class="py-2 px-4 text-left">Tanggal</th>
-                                <th class="py-2 px-4 text-left">Jenis</th>
-                                <th class="py-2 px-4 text-left">Nilai</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm">
-                            @foreach($data['nilai'][$kelas->id] as $nilai)
-                            <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                <td class="py-2 px-4">{{ $nilai->tanggal->format('d/m/Y') }}</td>
-                                <td class="py-2 px-4">
-                                    @if($nilai->jenis == 'ulangan')
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Ulangan</span>
-                                    @elseif($nilai->jenis == 'tugas')
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Tugas</span>
-                                    @elseif($nilai->jenis == 'praktek')
-                                    <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Praktek</span>
-                                    @elseif($nilai->jenis == 'remedial')
-                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Remedial</span>
-                                    @endif
-                                </td>
-                                <td class="py-2 px-4">{{ $nilai->nilai }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-3">
-                    <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, Auth::id()]) }}" class="text-blue-600 hover:text-blue-800 text-sm">Lihat semua nilai →</a>
-                </div>
-                @else
-                <p class="text-gray-500 text-sm">Belum ada data nilai</p>
+                    <div class="mt-4">
+                        <p class="text-gray-500 text-sm">Silakan pilih mapel untuk melihat kehadiran dan nilai.</p>
+                    </div>
                 @endif
             </div>
         </div>
