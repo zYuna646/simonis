@@ -9,28 +9,28 @@
             @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('guru'))
                 @if($context === 'kehadiran')
                     <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
-                        <i class="fas fa-calendar-plus mr-2"></i>Input Massal Kehadiran
+                        <i class="fas fa-calendar-plus mr-2"></i>Input Kehadiran
                     </a>
                     <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
                         <i class="fas fa-table mr-2"></i>Rekap Kehadiran
                     </a>
                 @elseif($context === 'nilai')
                     <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                        <i class="fas fa-list mr-2"></i>Input Massal Nilai
+                        <i class="fas fa-list mr-2"></i>Input Nilai
                     </a>
                 @else
                     <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
-                        <i class="fas fa-calendar-plus mr-2"></i>Input Massal Kehadiran
+                        <i class="fas fa-calendar-plus mr-2"></i>Input Kehadiran
                     </a>
                     <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                        <i class="fas fa-list mr-2"></i>Input Massal Nilai
+                        <i class="fas fa-list mr-2"></i>Input Nilai
                     </a>
                     <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
                         <i class="fas fa-table mr-2"></i>Rekap Kehadiran
                     </a>
                 @endif
             @endif
-            @if(Auth::user()->hasRole('admin'))
+            @if(Auth::user()->hasRole('admin') && ($context ?? null) !== 'nilai')
             <a href="{{ route('admin.kelas.siswa.create', $kelas->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 <i class="fas fa-plus mr-2"></i>Tambah Siswa
             </a>
@@ -64,7 +64,6 @@
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Hari</th>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Mata Pelajaran</th>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Guru Pengajar</th>
-                        <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Jam</th>
                         <th class="py-3 px-4 bg-gray-100 font-semibold text-sm text-gray-700 border-b border-gray-200 text-left">Pertemuan</th>
                     </tr>
                 </thead>
@@ -74,7 +73,6 @@
                             <td class="py-3 px-4 border-b border-gray-200">{{ $days[$jadwal->hari] ?? $jadwal->hari }}</td>
                             <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->mataPelajaran->name ?? '-' }}</td>
                             <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->mataPelajaran->guru->name ?? '-' }}</td>
-                            <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</td>
                             <td class="py-3 px-4 border-b border-gray-200">
                                 @php
                                     $pertemuanCount = App\Models\Kehadiran::where('kelas_id', $kelas->id)

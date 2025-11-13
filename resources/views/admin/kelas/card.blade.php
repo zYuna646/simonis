@@ -45,7 +45,7 @@
                             </a>
                         @endif
                         
-                        @if(auth()->user()->hasRole('admin') || auth()->id() == $item->user_id)
+                        @if(auth()->user()->hasRole('admin') )
                             <a href="{{ route('admin.kelas.edit', $item->id) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
                                 <i class="fas fa-edit mr-1"></i> Edit
                             </a>
