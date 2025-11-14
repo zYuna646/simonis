@@ -107,6 +107,7 @@ class DashboardController extends Controller
             $data['kehadiran'] = [];
             $data['nilai'] = [];
             $data['kelas'] = [];
+            $data['mapel'] = [];
             
             foreach ($anak as $a) {
                 $kelasIds = KelasSiswa::where('user_id', $a->id)->pluck('kelas_id')->toArray();
@@ -114,6 +115,16 @@ class DashboardController extends Controller
                 $data['kelas'][$a->id] = $kelasAnak;
                 
                 foreach ($kelasAnak as $k) {
+                    // Opsi mapel unik per kelas untuk anak ini (berdasarkan jadwal)
+                    $mapelOptionsPerKelas = \App\Models\Jadwal::with('mataPelajaran')
+                        ->where('kelas_id', $k->id)
+                        ->get()
+                        ->map(function($j){ return $j->mataPelajaran; })
+                        ->filter()
+                        ->unique('id')
+                        ->values();
+                    $data['mapel'][$k->id] = $mapelOptionsPerKelas;
+
                     $data['kehadiran'][$a->id][$k->id] = Kehadiran::where('user_id', $a->id)
                         ->where('kelas_id', $k->id)
                         ->orderBy('tanggal', 'desc')

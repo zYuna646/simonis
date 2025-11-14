@@ -303,6 +303,23 @@
             </div>
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Filter</button>
         </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const anakSelect = document.getElementById('anak_id');
+                const mapelSelect = document.getElementById('mapel_id_parent');
+                if (anakSelect && mapelSelect) {
+                    anakSelect.addEventListener('change', function() {
+                        if (this.value) {
+                            mapelSelect.disabled = false;
+                            // Auto-submit to refresh mapel options for the selected child
+                            this.form.submit();
+                        } else {
+                            mapelSelect.disabled = true;
+                        }
+                    });
+                }
+            });
+        </script>
         @if(!$selectedAnakId)
             <p class="text-gray-500 text-sm mb-6">Silakan pilih anak lalu mapel untuk melihat data kehadiran dan nilai.</p>
         @endif
