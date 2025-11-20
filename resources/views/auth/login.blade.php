@@ -55,6 +55,18 @@
                             required 
                             autofocus 
                         />
+
+                        <!-- Pilihan peran login (hanya tampilan) -->
+                        <div class="mb-6">
+                            <label for="login_as" class="block text-sm font-medium text-gray-700">Masuk sebagai</label>
+                            <select id="login_as" name="login_as" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--color-royal-blue-500)] focus:ring-[var(--color-royal-blue-500)]">
+                                <option value="">Pilih peran</option>
+                                <option value="admin" {{ old('login_as') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="guru" {{ old('login_as') === 'guru' ? 'selected' : '' }}>Guru</option>
+                                <option value="orang_tua" {{ old('login_as') === 'orang_tua' ? 'selected' : '' }}>Orang Tua</option>
+                                <option value="siswa" {{ old('login_as') === 'siswa' ? 'selected' : '' }}>Siswa</option>
+                            </select>
+                        </div>
                         
                         <x-auth.input 
                             type="password" 

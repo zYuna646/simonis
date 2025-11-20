@@ -12,11 +12,14 @@
                         <i class="fas fa-calendar-plus mr-2"></i>Input Kehadiran
                     </a>
                     <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
-                        <i class="fas fa-table mr-2"></i>Rekap Kehadiran
+                        <i class="fas fa-table mr-2"></i>Daftar Kehadiran
                     </a>
                 @elseif($context === 'nilai')
                     <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
                         <i class="fas fa-list mr-2"></i>Input Nilai
+                    </a>
+                    <a href="{{ route('admin.kelas.nilai.rekap', $kelas->id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
+                        <i class="fas fa-table mr-2"></i>Daftar Nilai
                     </a>
                 @else
                     <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
@@ -26,7 +29,10 @@
                         <i class="fas fa-list mr-2"></i>Input Nilai
                     </a>
                     <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
-                        <i class="fas fa-table mr-2"></i>Rekap Kehadiran
+                        <i class="fas fa-table mr-2"></i>Daftar Kehadiran
+                    </a>
+                    <a href="{{ route('admin.kelas.nilai.rekap', $kelas->id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
+                        <i class="fas fa-table mr-2"></i>Daftar Nilai
                     </a>
                 @endif
             @endif
@@ -75,19 +81,26 @@
                             <td class="py-3 px-4 border-b border-gray-200">{{ $jadwal->mataPelajaran->guru->name ?? '-' }}</td>
                             <td class="py-3 px-4 border-b border-gray-200">
                                 @php
-                                    $pertemuanCount = App\Models\Kehadiran::where('kelas_id', $kelas->id)
+                                    // Hitung pertemuan berdasarkan grup tanggal, konsisten dengan controller pertemuan
+                                    $pertemuanGroups = App\Models\Kehadiran::where('kelas_id', $kelas->id)
                                         ->where('mata_pelajaran_id', $jadwal->mata_pelajaran_id)
-                                        ->select('tanggal')
-                                        ->distinct()
-                                        ->count();
+                                        ->orderBy('tanggal')
+                                        ->get()
+                                        ->groupBy(function($rec) {
+                                            return $rec->tanggal instanceof \Carbon\Carbon ? $rec->tanggal->format('Y-m-d') : (string)$rec->tanggal;
+                                        });
+                                    $pertemuanCount = $pertemuanGroups->count();
                                 @endphp
                                 <div class="flex flex-wrap gap-1">
                                     @for($i = 1; $i <= $pertemuanCount; $i++)
-                                        <a href="{{ route('admin.kelas.jadwal.pertemuan', [$kelas->id, $jadwal->id, $i]) }}" 
+                                        <a href="{{ route('admin.kelas.jadwal.pertemuan', [$kelas->id, $jadwal->id, $i]) }}"
                                            class="px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition text-xs">
                                             P-{{ $i }}
                                         </a>
                                     @endfor
+                                    @if($pertemuanCount === 0)
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs">Belum ada pertemuan</span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

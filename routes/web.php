@@ -85,6 +85,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
      Route::post('/kelas/{kelas}/nilai/bulk-store', [\App\Http\Controllers\Admin\NilaiController::class, 'bulkStore'])
          ->middleware('role:admin|guru')
          ->name('admin.kelas.nilai.bulk.store');
+     // Rekap nilai kelas & PDF
+     Route::get('/kelas/{kelas}/nilai/rekap', [\App\Http\Controllers\Admin\NilaiController::class, 'rekapKelas'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.nilai.rekap');
+     Route::get('/kelas/{kelas}/nilai/rekap/pdf', [\App\Http\Controllers\Admin\NilaiController::class, 'rekapKelasPdf'])
+         ->middleware('role:admin|guru')
+         ->name('admin.kelas.nilai.rekap.pdf');
      // Rute jadwal per kelas
      Route::get('/kelas/{kelas}/jadwal', [\App\Http\Controllers\Admin\JadwalController::class, 'index'])
          ->name('admin.kelas.jadwal.index');

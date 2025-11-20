@@ -10,6 +10,8 @@ use App\Models\KelasSiswa;
 use App\Models\Jadwal;
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class NilaiController extends Controller
 {
@@ -186,5 +188,108 @@ class NilaiController extends Controller
 
         return redirect()->route('admin.kelas.siswa.index', $kelasId)
             ->with('success', 'Nilai siswa berhasil ditambahkan secara massal');
+    }
+
+    // === REKAP NILAI SELURUH SISWA DALAM KELAS ===
+    public function rekapKelas($kelasId)
+    {
+        $kelas = Kelas::findOrFail($kelasId);
+        $siswaList = User::whereIn('id', KelasSiswa::where('kelas_id', $kelasId)->pluck('user_id'))
+            ->orderBy('name')
+            ->get();
+
+        // Daftar tanggal unik untuk kolom per tanggal
+        $pertemuan = Nilai::where('kelas_id', $kelasId)
+            ->select('tanggal')
+            ->distinct()
+            ->orderBy('tanggal')
+            ->get()
+            ->pluck('tanggal');
+
+        // Kumpulkan semua record nilai per user per tanggal, terkelompok per jenis
+        $records = Nilai::where('kelas_id', $kelasId)->get();
+        $index = [];
+        foreach ($records as $rec) {
+            $keyDate = $rec->tanggal instanceof \Carbon\Carbon ? $rec->tanggal->format('Y-m-d') : (string)$rec->tanggal;
+            $index[$rec->user_id][$keyDate][$rec->jenis] = isset($index[$rec->user_id][$keyDate][$rec->jenis])
+                ? array_merge((array)$index[$rec->user_id][$keyDate][$rec->jenis], [(float)$rec->nilai])
+                : [(float)$rec->nilai];
+        }
+
+        // Hitung total per jenis per siswa (jumlah entri), mirip jumlah status pada kehadiran
+        $totals = [];
+        $jenisList = ['ulangan', 'tugas', 'praktek', 'remedial'];
+        foreach ($siswaList as $s) {
+            $userRecs = $records->where('user_id', $s->id);
+            $totals[$s->id] = [];
+            foreach ($jenisList as $jenis) {
+                $totals[$s->id][$jenis] = $userRecs->where('jenis', $jenis)->count();
+            }
+        }
+
+        // Ambil label mata pelajaran (opsional)
+        $mataPelajaran = null;
+        $firstRec = $records->first();
+        if ($firstRec && $firstRec->mata_pelajaran_id) {
+            $mataPelajaran = MataPelajaran::with('guru')->find($firstRec->mata_pelajaran_id);
+        }
+
+        return view('admin.kelas.siswa.nilai.rekap', compact('kelas', 'siswaList', 'pertemuan', 'index', 'totals', 'mataPelajaran'));
+    }
+
+    public function rekapKelasPdf($kelasId)
+    {
+        $kelas = Kelas::findOrFail($kelasId);
+        $siswaList = User::whereIn('id', KelasSiswa::where('kelas_id', $kelasId)->pluck('user_id'))
+            ->orderBy('name')
+            ->get();
+
+        // Daftar tanggal unik
+        $pertemuan = Nilai::where('kelas_id', $kelasId)
+            ->select('tanggal')
+            ->distinct()
+            ->orderBy('tanggal')
+            ->get()
+            ->pluck('tanggal');
+
+        // Kumpulkan nilai per user per tanggal per jenis
+        $records = Nilai::where('kelas_id', $kelasId)->get();
+        $index = [];
+        foreach ($records as $rec) {
+            $keyDate = $rec->tanggal instanceof \Carbon\Carbon ? $rec->tanggal->format('Y-m-d') : (string)$rec->tanggal;
+            $index[$rec->user_id][$keyDate][$rec->jenis] = isset($index[$rec->user_id][$keyDate][$rec->jenis])
+                ? array_merge((array)$index[$rec->user_id][$keyDate][$rec->jenis], [(float)$rec->nilai])
+                : [(float)$rec->nilai];
+        }
+
+        // Totals (jumlah entri) per jenis
+        $totals = [];
+        $jenisList = ['ulangan', 'tugas', 'praktek', 'remedial'];
+        foreach ($siswaList as $s) {
+            $userRecs = $records->where('user_id', $s->id);
+            $totals[$s->id] = [];
+            foreach ($jenisList as $jenis) {
+                $totals[$s->id][$jenis] = $userRecs->where('jenis', $jenis)->count();
+            }
+        }
+
+        $mataPelajaran = null;
+        $firstRec = $records->first();
+        if ($firstRec && $firstRec->mata_pelajaran_id) {
+            $mataPelajaran = MataPelajaran::with('guru')->find($firstRec->mata_pelajaran_id);
+        }
+
+        $html = view('admin.kelas.siswa.nilai.rekap_pdf', compact('kelas', 'siswaList', 'pertemuan', 'index', 'totals', 'mataPelajaran'))->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return response($dompdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="rekap_nilai_kelas_'.($kelas->name).'.pdf"');
     }
 }
