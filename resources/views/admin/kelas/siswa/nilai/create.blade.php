@@ -9,7 +9,7 @@
     @if($isBulk)
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-gray-800">Input Nilai Massal: {{ $kelas->name }}</h2>
-            <a href="{{ route('admin.kelas.siswa.index', $kelas->id) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            <a href="{{ route('admin.kelas.siswa.index', [$kelas->id, 'context' => request()->get('context', 'nilai')]) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
         </div>
@@ -107,7 +107,7 @@
     @else
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-gray-800">Tambah Nilai: {{ $siswa->name }}</h2>
-            <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $siswa->id]) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $siswa->id, 'context' => request()->get('context', 'nilai')]) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
         </div>

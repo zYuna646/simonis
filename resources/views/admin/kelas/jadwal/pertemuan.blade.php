@@ -9,7 +9,7 @@
             <p class="text-gray-600">Tanggal: {{ \Carbon\Carbon::parse($tanggalPertemuan)->format('d F Y') }}</p>
         </div>
         <div class="flex space-x-2">
-            <a href="{{ route('admin.kelas.siswa.index', $kelas->id) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            <a href="{{ route('admin.kelas.siswa.index', [$kelas->id, 'context' => request()->get('context', 'kehadiran')]) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
         </div>

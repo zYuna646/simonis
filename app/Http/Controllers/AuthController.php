@@ -20,16 +20,34 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'login_as' => ['nullable', 'in:admin,guru,orang_tua,siswa'],
         ]);
+
+        $credentials = [
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+        ];
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
             // Redirect berdasarkan role
             $user = Auth::user();
+            $selectedRole = $validated['login_as'] ?? null;
+            if ($selectedRole) {
+                // Jika role user tidak sesuai pilihan, gagalkan login
+                if (!$user->hasRole($selectedRole)) {
+                    Auth::logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return back()
+                        ->withErrors(['login_as' => 'Role akun tidak sesuai dengan pilihan "Masuk sebagai".'])
+                        ->withInput($request->only('email', 'login_as'));
+                }
+            }
             if ($user->hasRole('admin')) {
                 return redirect()->intended('/admin/dashboard');
             }

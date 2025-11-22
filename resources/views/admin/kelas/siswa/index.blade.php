@@ -8,40 +8,40 @@
             @php $context = request()->get('context'); @endphp
             @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('guru'))
                 @if($context === 'kehadiran')
-                    <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
+                    <a href="{{ route('admin.kelas.kehadiran.bulk.create', [$kelas->id, 'context' => $context]) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
                         <i class="fas fa-calendar-plus mr-2"></i>Input Kehadiran
                     </a>
-                    <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
+                    <a href="{{ route('admin.kelas.kehadiran.rekap', [$kelas->id, 'context' => $context]) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
                         <i class="fas fa-table mr-2"></i>Daftar Kehadiran
                     </a>
                 @elseif($context === 'nilai')
-                    <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                    <a href="{{ route('admin.kelas.nilai.bulk.create', [$kelas->id, 'context' => $context]) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
                         <i class="fas fa-list mr-2"></i>Input Nilai
                     </a>
-                    <a href="{{ route('admin.kelas.nilai.rekap', $kelas->id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
+                    <a href="{{ route('admin.kelas.nilai.rekap', [$kelas->id, 'context' => $context]) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
                         <i class="fas fa-table mr-2"></i>Daftar Nilai
                     </a>
                 @else
-                    <a href="{{ route('admin.kelas.kehadiran.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
+                    <a href="{{ route('admin.kelas.kehadiran.bulk.create', [$kelas->id, 'context' => 'kehadiran']) }}" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition">
                         <i class="fas fa-calendar-plus mr-2"></i>Input Kehadiran
                     </a>
-                    <a href="{{ route('admin.kelas.nilai.bulk.create', $kelas->id) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                    <a href="{{ route('admin.kelas.nilai.bulk.create', [$kelas->id, 'context' => 'nilai']) }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
                         <i class="fas fa-list mr-2"></i>Input Nilai
                     </a>
-                    <a href="{{ route('admin.kelas.kehadiran.rekap', $kelas->id) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
+                    <a href="{{ route('admin.kelas.kehadiran.rekap', [$kelas->id, 'context' => 'kehadiran']) }}" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">
                         <i class="fas fa-table mr-2"></i>Daftar Kehadiran
                     </a>
-                    <a href="{{ route('admin.kelas.nilai.rekap', $kelas->id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
+                    <a href="{{ route('admin.kelas.nilai.rekap', [$kelas->id, 'context' => 'nilai']) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
                         <i class="fas fa-table mr-2"></i>Daftar Nilai
                     </a>
                 @endif
             @endif
             @if(Auth::user()->hasRole('admin') && ($context ?? null) !== 'nilai')
-            <a href="{{ route('admin.kelas.siswa.create', $kelas->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            <a href="{{ route('admin.kelas.siswa.create', [$kelas->id, 'context' => $context]) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 <i class="fas fa-plus mr-2"></i>Tambah Siswa
             </a>
             @endif
-            <a href="{{ route('admin.kelas-card') }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
+            <a href="{{ route('admin.kelas-card', ['context' => $context]) }}" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>
         </div>
@@ -93,7 +93,7 @@
                                 @endphp
                                 <div class="flex flex-wrap gap-1">
                                     @for($i = 1; $i <= $pertemuanCount; $i++)
-                                        <a href="{{ route('admin.kelas.jadwal.pertemuan', [$kelas->id, $jadwal->id, $i]) }}"
+                                        <a href="{{ route('admin.kelas.jadwal.pertemuan', [$kelas->id, $jadwal->id, $i, 'context' => $context]) }}"
                                            class="px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition text-xs">
                                             P-{{ $i }}
                                         </a>
@@ -137,18 +137,18 @@
                             <td class="py-3 px-4 border-b border-gray-200">
                                 <div class="flex space-x-2">
                                     @if($context === 'kehadiran')
-                                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
+                                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id, 'context' => $context]) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
                                             <i class="fas fa-calendar-check mr-1"></i> Kehadiran
                                         </a>
                                     @elseif($context === 'nilai')
-                                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
+                                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id, 'context' => $context]) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
                                             <i class="fas fa-graduation-cap mr-1"></i> Nilai
                                         </a>
                                     @else
-                                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
+                                        <a href="{{ route('admin.kelas.siswa.kehadiran.index', [$kelas->id, $s->id, 'context' => 'kehadiran']) }}" class="px-3 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 transition">
                                             <i class="fas fa-calendar-check mr-1"></i> Kehadiran
                                         </a>
-                                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id]) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
+                                        <a href="{{ route('admin.kelas.siswa.nilai.index', [$kelas->id, $s->id, 'context' => 'nilai']) }}" class="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition">
                                             <i class="fas fa-graduation-cap mr-1"></i> Nilai
                                         </a>
                                     @endif
